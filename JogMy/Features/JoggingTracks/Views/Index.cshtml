@@ -67,7 +67,7 @@
                                         {
                                             <small class="text-muted d-block mb-2">@track.Description</small>
                                         }
-                                        <button class="btn btn-sm btn-outline-primary" onclick="showTrackOnMap(@track.Id, @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.Name)), @Html.Raw(track.Coordinates))">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showTrackOnMap(@track.Id, '@track.Name.Replace("'", "\\'")'); return false;">
                                             <i class="bi bi-eye me-1"></i>View on Map
                                         </button>
                                     </div>
@@ -149,6 +149,9 @@
                     try {
                         var coordinates = @Html.Raw(track.Coordinates);
                         if (coordinates && Array.isArray(coordinates)) {
+                            // Store track data for later use
+                            trackData[@track.Id] = coordinates;
+                            
                             var polyline = L.polyline(coordinates, {
                                 color: '#007bff',
                                 weight: 4,
@@ -169,41 +172,71 @@
             }
         }
 
-        function showTrackOnMap(trackId, trackName, coordinates) {
+        // Store track data for lookup
+        var trackData = {};
+        
+        function showTrackOnMap(trackId, trackName) {
+            console.log('showTrackOnMap called with:', trackId, trackName);
+            
             try {
+                // Check if map is initialized
+                if (!map) {
+                    console.error('Map not initialized yet');
+                    alert('Map is still loading, please try again in a moment');
+                    return;
+                }
+
                 // Remove previous highlight
                 if (currentLayer) {
                     map.removeLayer(currentLayer);
                 }
 
-                // coordinates is already a parsed array, no need to JSON.parse
-                var coords = coordinates;
+                // Get coordinates from stored track data
+                var coords = trackData[trackId];
                 if (!coords || !Array.isArray(coords) || coords.length === 0) {
                     console.error('Invalid coordinates for track:', trackName);
+                    alert('No valid coordinates found for this track');
                     return;
                 }
 
+                console.log('Creating polyline with coords:', coords);
                 currentLayer = L.polyline(coords, {
                     color: '#dc3545',
                     weight: 6,
                     opacity: 1
                 }).addTo(map);
 
-                // Fit map to show the track
-                map.fitBounds(currentLayer.getBounds());
+                // Center and fit map to show the track with animation
+                console.log('Fitting bounds to track');
+                map.fitBounds(currentLayer.getBounds(), {
+                    padding: [20, 20],
+                    maxZoom: 16,
+                    animate: true,
+                    duration: 1.0
+                });
                 
-                currentLayer.bindPopup('<strong>' + trackName + '</strong>').openPopup();
+                // Show popup at track center after animation
+                setTimeout(function() {
+                    if (currentLayer) {
+                        currentLayer.bindPopup('<strong>' + trackName + '</strong><br><small>Track highlighted in red</small>').openPopup();
+                    }
+                }, 500);
             } catch (e) {
                 console.error('Error showing track on map:', e);
+                alert('Error showing track: ' + e.message);
             }
         }
 
         // Initialize map when page loads
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
+                console.log('Initializing map...');
                 initializeMap();
             }, 100);
         });
+
+        // Make function globally accessible
+        window.showTrackOnMap = showTrackOnMap;
     </script>
 }
 
