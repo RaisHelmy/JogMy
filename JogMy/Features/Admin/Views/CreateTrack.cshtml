@@ -1,0 +1,101 @@
+@model JogMy.Features.Admin.ViewModels.CreateTrackViewModel
+
+@{
+    ViewData["Title"] = "Create Jogging Track";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Create New Jogging Track</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateTrack" method="post">
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter track name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Distance" class="form-label"></label>
+                                <input asp-for="Distance" class="form-control" step="0.1" placeholder="e.g., 5.2" />
+                                <span asp-validation-for="Distance" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Region" class="form-label"></label>
+                                <select asp-for="Region" class="form-select">
+                                    <option value="">Select Region</option>
+                                    <option value="KL">Kuala Lumpur</option>
+                                    <option value="Selangor">Selangor</option>
+                                </select>
+                                <span asp-validation-for="Region" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Optional description of the track"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Coordinates" class="form-label"></label>
+                        <textarea asp-for="Coordinates" class="form-control" rows="5" placeholder='Example: [[3.1319, 101.6841], [3.1320, 101.6842], [3.1321, 101.6843]]'></textarea>
+                        <div class="form-text">
+                            Enter coordinates as a JSON array of [latitude, longitude] pairs. 
+                            <button type="button" class="btn btn-link btn-sm p-0" onclick="showCoordinateExample()">Show example</button>
+                        </div>
+                        <span asp-validation-for="Coordinates" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Create Track</button>
+                        <a asp-action="Tracks" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Coordinate Format Help</h6>
+            </div>
+            <div class="card-body">
+                <p class="small">Coordinates should be in JSON format:</p>
+                <pre class="small bg-light p-2 rounded" id="coordinateExample" style="display: none;">
+[
+  [3.1319, 101.6841],
+  [3.1320, 101.6842],
+  [3.1321, 101.6843],
+  [3.1322, 101.6844]
+]</pre>
+                <p class="small mt-2">Each coordinate pair represents:</p>
+                <ul class="small">
+                    <li><strong>First number:</strong> Latitude</li>
+                    <li><strong>Second number:</strong> Longitude</li>
+                </ul>
+                <p class="small">You can use tools like Google Maps to find coordinates by right-clicking on locations.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function showCoordinateExample() {
+            const example = document.getElementById('coordinateExample');
+            example.style.display = example.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+}

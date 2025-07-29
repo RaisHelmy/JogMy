@@ -1,0 +1,88 @@
+@model JogMy.Features.Admin.ViewModels.EditTrackViewModel
+
+@{
+    ViewData["Title"] = "Edit Jogging Track";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Edit Jogging Track</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="EditTrack" method="post">
+                    <input asp-for="Id" type="hidden" />
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Distance" class="form-label"></label>
+                                <input asp-for="Distance" class="form-control" step="0.1" />
+                                <span asp-validation-for="Distance" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="Region" class="form-label"></label>
+                                <select asp-for="Region" class="form-select">
+                                    <option value="">Select Region</option>
+                                    <option value="KL">Kuala Lumpur</option>
+                                    <option value="Selangor">Selangor</option>
+                                </select>
+                                <span asp-validation-for="Region" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Coordinates" class="form-label"></label>
+                        <textarea asp-for="Coordinates" class="form-control" rows="5"></textarea>
+                        <div class="form-text">
+                            Enter coordinates as a JSON array of [latitude, longitude] pairs.
+                        </div>
+                        <span asp-validation-for="Coordinates" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Update Track</button>
+                        <a asp-action="Tracks" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Coordinate Format</h6>
+            </div>
+            <div class="card-body">
+                <p class="small">Format coordinates as JSON:</p>
+                <pre class="small bg-light p-2 rounded">
+[
+  [3.1319, 101.6841],
+  [3.1320, 101.6842],
+  [3.1321, 101.6843]
+]</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Welcome to JogMy";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary">
+                    <i class="bi bi-geo-alt-fill me-3"></i>Welcome to JogMy
+                </h1>
+                <p class="lead text-muted">Your ultimate companion for discovering and tracking jogging routes in Kuala Lumpur and Selangor</p>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-map text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="card-title">Interactive Maps</h5>
+                            <p class="card-text text-muted">Explore jogging tracks with detailed interactive maps powered by OpenStreetMap</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-people text-success" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="card-title">Community Driven</h5>
+                            <p class="card-text text-muted">Join a community of joggers sharing the best routes in KL and Selangor</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-speedometer2 text-info" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="card-title">Track Details</h5>
+                            <p class="card-text text-muted">Get distance estimates and detailed information for every jogging track</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a asp-controller="JoggingTracks" asp-action="Index" class="btn btn-primary btn-lg me-3">
+                    <i class="bi bi-map me-2"></i>Explore Tracks
+                </a>
+                @if (!User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-person-plus me-2"></i>Join Community
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
