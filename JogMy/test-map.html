@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Test</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <h1>Leaflet Map Test</h1>
+    <div id="map"></div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        console.log('Starting map test...');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                console.log('Leaflet version:', L.version);
+                
+                const map = L.map('map').setView([3.1319, 101.6841], 13);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // Add test track
+                const testCoords = [
+                    [3.1352708736850583, 101.65359282142393],
+                    [3.1320141843978693, 101.66097714849366],
+                    [3.126700616978489, 101.66029023434761],
+                    [3.120529988778182, 101.66217924824919]
+                ];
+                
+                L.polyline(testCoords, {
+                    color: '#007bff',
+                    weight: 4,
+                    opacity: 0.7
+                }).addTo(map);
+                
+                console.log('Map initialized successfully');
+                
+            } catch (error) {
+                console.error('Map initialization failed:', error);
+                document.getElementById('map').innerHTML = 'Map failed: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -4,6 +4,12 @@
     ViewData["Title"] = "Create Jogging Track";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+}
+
 <div class="row">
     <div class="col-md-8">
         <div class="card">
@@ -48,10 +54,19 @@
                     </div>
                     
                     <div class="mb-3">
+                        <label class="form-label">Track Route Map</label>
+                        <div id="map" style="height: 400px; width: 100%; border: 1px solid #dee2e6; border-radius: 0.375rem;"></div>
+                        <div class="form-text mt-2">
+                            Click on the map to add waypoints for your jogging track. Distance will be calculated automatically.
+                            <button type="button" class="btn btn-outline-danger btn-sm ms-2" onclick="clearTrack()">Clear Track</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
                         <label asp-for="Coordinates" class="form-label"></label>
-                        <textarea asp-for="Coordinates" class="form-control" rows="5" placeholder='Example: [[3.1319, 101.6841], [3.1320, 101.6842], [3.1321, 101.6843]]'></textarea>
+                        <textarea asp-for="Coordinates" class="form-control" rows="5" placeholder='Coordinates will be filled automatically from the map above' readonly></textarea>
                         <div class="form-text">
-                            Enter coordinates as a JSON array of [latitude, longitude] pairs. 
+                            Coordinates are automatically generated from the map above.
                             <button type="button" class="btn btn-link btn-sm p-0" onclick="showCoordinateExample()">Show example</button>
                         </div>
                         <span asp-validation-for="Coordinates" class="text-danger"></span>
@@ -92,7 +107,120 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""></script>
     <script>
+        let map;
+        let trackCoordinates = [];
+        let polyline;
+        let markers = [];
+
+        // Initialize map
+        document.addEventListener('DOMContentLoaded', function() {
+            // Default to KL center coordinates
+            map = L.map('map').setView([3.1319, 101.6841], 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add click event to map for adding waypoints
+            map.on('click', function(e) {
+                addWaypoint(e.latlng.lat, e.latlng.lng);
+            });
+        });
+
+        function addWaypoint(lat, lng) {
+            // Add coordinates to array
+            trackCoordinates.push([parseFloat(lat.toFixed(6)), parseFloat(lng.toFixed(6))]);
+            
+            // Create numbered marker icon
+            const markerNumber = trackCoordinates.length;
+            const numberedIcon = L.divIcon({
+                className: 'numbered-marker',
+                html: `<div style="background-color: #ff4444; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${markerNumber}</div>`,
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            });
+            
+            // Add marker with numbered icon
+            const marker = L.marker([lat, lng], { icon: numberedIcon }).addTo(map);
+            markers.push(marker);
+            
+            // Update polyline
+            updatePolyline();
+            
+            // Update coordinates textarea and distance
+            updateCoordinatesAndDistance();
+        }
+
+        function updatePolyline() {
+            // Remove existing polyline
+            if (polyline) {
+                map.removeLayer(polyline);
+            }
+            
+            // Add new polyline if we have at least 2 points
+            if (trackCoordinates.length >= 2) {
+                polyline = L.polyline(trackCoordinates, {color: 'red', weight: 3}).addTo(map);
+            }
+        }
+
+        function calculateDistance(coords) {
+            if (coords.length < 2) return 0;
+            
+            let totalDistance = 0;
+            for (let i = 1; i < coords.length; i++) {
+                const lat1 = coords[i-1][0];
+                const lng1 = coords[i-1][1];
+                const lat2 = coords[i][0];
+                const lng2 = coords[i][1];
+                
+                // Haversine formula for distance calculation
+                const R = 6371; // Earth's radius in kilometers
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLng = (lng2 - lng1) * Math.PI / 180;
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                         Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                         Math.sin(dLng/2) * Math.sin(dLng/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                const distance = R * c;
+                
+                totalDistance += distance;
+            }
+            
+            return Math.round(totalDistance * 100) / 100; // Round to 2 decimal places
+        }
+
+        function updateCoordinatesAndDistance() {
+            // Update coordinates textarea
+            document.getElementById('Coordinates').value = JSON.stringify(trackCoordinates, null, 2);
+            
+            // Calculate and update distance
+            const distance = calculateDistance(trackCoordinates);
+            document.getElementById('Distance').value = distance;
+        }
+
+        function clearTrack() {
+            // Clear arrays
+            trackCoordinates = [];
+            
+            // Remove markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+            
+            // Remove polyline
+            if (polyline) {
+                map.removeLayer(polyline);
+                polyline = null;
+            }
+            
+            // Clear form fields
+            document.getElementById('Coordinates').value = '';
+            document.getElementById('Distance').value = '';
+        }
+
         function showCoordinateExample() {
             const example = document.getElementById('coordinateExample');
             example.style.display = example.style.display === 'none' ? 'block' : 'none';
