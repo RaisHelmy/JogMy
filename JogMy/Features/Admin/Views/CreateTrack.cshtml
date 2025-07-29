@@ -52,6 +52,95 @@
                         <textarea asp-for="Description" class="form-control" rows="3" placeholder="Optional description of the track"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
+
+                    <!-- Tooltip Customization Section -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="bi bi-chat-square-text me-2"></i>Tooltip Customization
+                            </h6>
+                            <small class="text-muted">Customize how this track appears in map tooltips for joggers</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="CustomDifficulty" class="form-label"></label>
+                                        <select asp-for="CustomDifficulty" class="form-select">
+                                            <option value="">Auto-calculate from distance</option>
+                                            <option value="Easy">Easy</option>
+                                            <option value="Moderate">Moderate</option>
+                                            <option value="Hard">Hard</option>
+                                            <option value="Expert">Expert</option>
+                                        </select>
+                                        <span asp-validation-for="CustomDifficulty" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="SurfaceType" class="form-label"></label>
+                                        <input asp-for="SurfaceType" class="form-control" placeholder="e.g., Paved, Trail, Mixed" />
+                                        <span asp-validation-for="SurfaceType" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="SpecialFeatures" class="form-label"></label>
+                                <input asp-for="SpecialFeatures" class="form-control" placeholder="e.g., Scenic views, Shaded path, Hills" />
+                                <span asp-validation-for="SpecialFeatures" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="BestTimeToJog" class="form-label"></label>
+                                        <input asp-for="BestTimeToJog" class="form-control" placeholder="e.g., Early morning, Evening" />
+                                        <span asp-validation-for="BestTimeToJog" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="SafetyNotes" class="form-label"></label>
+                                        <input asp-for="SafetyNotes" class="form-control" placeholder="e.g., Busy road nearby, Well monitored" />
+                                        <span asp-validation-for="SafetyNotes" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <label class="form-label">Amenities Available</label>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input asp-for="HasParking" class="form-check-input" type="checkbox" />
+                                                <label asp-for="HasParking" class="form-check-label"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input asp-for="HasWaterFountains" class="form-check-input" type="checkbox" />
+                                                <label asp-for="HasWaterFountains" class="form-check-label"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input asp-for="HasRestrooms" class="form-check-input" type="checkbox" />
+                                                <label asp-for="HasRestrooms" class="form-check-label"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input asp-for="IsWellLit" class="form-check-input" type="checkbox" />
+                                                <label asp-for="IsWellLit" class="form-check-label"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="mb-3">
                         <label class="form-label">Track Route Map</label>

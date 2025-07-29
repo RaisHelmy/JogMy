@@ -233,7 +233,22 @@
                         var coordinates = @Html.Raw(track.Coordinates);
                         if (coordinates && Array.isArray(coordinates)) {
                             // Store track data for later use
-                            trackData[@track.Id] = coordinates;
+                            trackData[@track.Id] = {
+                                coordinates: coordinates,
+                                name: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.Name)),
+                                region: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.Region)),
+                                distance: @track.Distance,
+                                description: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.Description ?? "")),
+                                customDifficulty: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.CustomDifficulty ?? "")),
+                                surfaceType: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.SurfaceType ?? "")),
+                                specialFeatures: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.SpecialFeatures ?? "")),
+                                bestTimeToJog: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.BestTimeToJog ?? "")),
+                                safetyNotes: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.SafetyNotes ?? "")),
+                                hasParking: @(track.HasParking.ToString().ToLower()),
+                                hasWaterFountains: @(track.HasWaterFountains.ToString().ToLower()),
+                                hasRestrooms: @(track.HasRestrooms.ToString().ToLower()),
+                                isWellLit: @(track.IsWellLit.ToString().ToLower())
+                            };
                             
                             var polyline = L.polyline(coordinates, {
                                 color: '#007bff',
@@ -241,9 +256,11 @@
                                 opacity: 0.7
                             }).addTo(map);
                             
-                            var trackName = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.Name));
-                            var trackRegion = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.Region));
-                            polyline.bindPopup('<strong>' + trackName + '</strong><br>Distance: @track.Distance km<br>Region: ' + trackRegion);
+                            var tooltipContent = generateTooltipContent(trackData[@track.Id]);
+                            polyline.bindPopup(tooltipContent, {
+                                maxWidth: 350,
+                                className: 'jogging-popup'
+                            });
                         }
                     } catch (e) {
                         console.error('Error loading track @track.Id:', e);
@@ -257,6 +274,177 @@
 
         // Store track data for lookup
         var trackData = {};
+        
+        // Function to calculate estimated time (assuming 8 km/h average jogging speed)
+        function calculateEstimatedTime(distance) {
+            var avgSpeed = 8; // km/h
+            var timeHours = distance / avgSpeed;
+            var minutes = Math.round(timeHours * 60);
+            
+            if (minutes < 60) {
+                return minutes + ' min';
+            } else {
+                var hours = Math.floor(minutes / 60);
+                var remainingMinutes = minutes % 60;
+                return hours + 'h ' + (remainingMinutes > 0 ? remainingMinutes + 'm' : '');
+            }
+        }
+        
+        // Function to calculate estimated calories (assuming 70kg person, 0.75 cal/kg/km)
+        function calculateEstimatedCalories(distance) {
+            var avgWeight = 70; // kg
+            var caloriesPerKgKm = 0.75;
+            var calories = Math.round(distance * avgWeight * caloriesPerKgKm);
+            return calories + ' cal';
+        }
+        
+        // Function to determine difficulty based on distance
+        function getDifficulty(distance) {
+            if (distance <= 3) {
+                return { class: 'difficulty-easy', text: 'Easy' };
+            } else if (distance <= 7) {
+                return { class: 'difficulty-moderate', text: 'Moderate' };
+            } else {
+                return { class: 'difficulty-hard', text: 'Hard' };
+            }
+        }
+        
+        // Function to generate beautiful tooltip content with custom data
+        function generateTooltipContent(trackData) {
+            var estimatedTime = calculateEstimatedTime(trackData.distance);
+            var estimatedCalories = calculateEstimatedCalories(trackData.distance);
+            
+            // Use custom difficulty if available, otherwise calculate from distance
+            var difficulty = trackData.customDifficulty ? 
+                { class: `difficulty-${trackData.customDifficulty.toLowerCase()}`, text: trackData.customDifficulty } :
+                getDifficulty(trackData.distance);
+            
+            var hasDescription = trackData.description && trackData.description.trim() !== '';
+            var surfaceType = trackData.surfaceType || 'Suitable for jogging, running, and walking';
+            
+            // Build amenities list
+            var amenities = [];
+            if (trackData.hasParking) amenities.push('<i class="bi bi-car-front me-1"></i>Parking');
+            if (trackData.hasWaterFountains) amenities.push('<i class="bi bi-droplet me-1"></i>Water');
+            if (trackData.hasRestrooms) amenities.push('<i class="bi bi-house me-1"></i>Restrooms');
+            if (trackData.isWellLit) amenities.push('<i class="bi bi-lightbulb me-1"></i>Well Lit');
+            
+            return `
+                <div class="jogging-tooltip">
+                    <div class="tooltip-header">
+                        <div class="track-icon">
+                            <i class="bi bi-geo-alt-fill text-primary"></i>
+                        </div>
+                        <div class="track-title">
+                            <h6 class="mb-0 fw-bold track-name">${trackData.name}</h6>
+                            <small class="text-muted track-region">${trackData.region}</small>
+                        </div>
+                        <div class="track-badge">
+                            <span class="badge bg-success track-distance">${trackData.distance} km</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tooltip-body">
+                        <div class="track-stats">
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <i class="bi bi-speedometer2 text-info"></i>
+                                        <small class="d-block">Distance</small>
+                                        <strong class="track-distance-detail">${trackData.distance} km</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <i class="bi bi-clock text-warning"></i>
+                                        <small class="d-block">Est. Time</small>
+                                        <strong class="track-time">${estimatedTime}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item">
+                                        <i class="bi bi-fire text-danger"></i>
+                                        <small class="d-block">Calories</small>
+                                        <strong class="track-calories">${estimatedCalories}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${hasDescription ? `
+                        <div class="track-description mt-2">
+                            <p class="mb-0 small text-muted track-desc-text">${trackData.description}</p>
+                        </div>
+                        ` : ''}
+                        
+                        ${trackData.specialFeatures ? `
+                        <div class="track-features mt-2">
+                            <small class="text-muted">
+                                <i class="bi bi-star me-1"></i>
+                                ${trackData.specialFeatures}
+                            </small>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="track-difficulty mt-2">
+                            <small class="text-muted">Difficulty: </small>
+                            <div class="difficulty-level d-inline-block">
+                                <span class="difficulty-indicator ${difficulty.class}">${difficulty.text}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="track-surface mt-1">
+                            <small class="text-muted">
+                                <i class="bi bi-road me-1"></i>
+                                ${surfaceType}
+                            </small>
+                        </div>
+                        
+                        ${trackData.bestTimeToJog ? `
+                        <div class="track-timing mt-1">
+                            <small class="text-muted">
+                                <i class="bi bi-clock-history me-1"></i>
+                                Best time: ${trackData.bestTimeToJog}
+                            </small>
+                        </div>
+                        ` : ''}
+                        
+                        ${amenities.length > 0 ? `
+                        <div class="track-amenities mt-2">
+                            <small class="text-muted d-block mb-1">Amenities:</small>
+                            <div class="amenities-list">
+                                ${amenities.map(amenity => `<small class="text-info me-2">${amenity}</small>`).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${trackData.safetyNotes ? `
+                        <div class="track-safety mt-2">
+                            <small class="text-muted">
+                                <i class="bi bi-shield-check me-1"></i>
+                                ${trackData.safetyNotes}
+                            </small>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="tooltip-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="bi bi-people me-1"></i>
+                                Public track
+                            </small>
+                            <div class="track-actions">
+                                <small class="text-primary">
+                                    <i class="bi bi-eye me-1"></i>
+                                    Track highlighted
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
         
         function showTrackOnMap(trackId, trackName) {
             console.log('showTrackOnMap called with:', trackId, trackName);
@@ -274,14 +462,15 @@
                     map.removeLayer(currentLayer);
                 }
 
-                // Get coordinates from stored track data
-                var coords = trackData[trackId];
-                if (!coords || !Array.isArray(coords) || coords.length === 0) {
-                    console.error('Invalid coordinates for track:', trackName);
-                    alert('No valid coordinates found for this track');
+                // Get track data from stored data
+                var trackInfo = trackData[trackId];
+                if (!trackInfo || !trackInfo.coordinates || !Array.isArray(trackInfo.coordinates) || trackInfo.coordinates.length === 0) {
+                    console.error('Invalid track data for track:', trackName);
+                    alert('No valid track data found');
                     return;
                 }
 
+                var coords = trackInfo.coordinates;
                 console.log('Creating polyline with coords:', coords);
                 currentLayer = L.polyline(coords, {
                     color: '#dc3545',
@@ -298,10 +487,14 @@
                     duration: 1.0
                 });
                 
-                // Show popup at track center after animation
+                // Show beautiful popup at track center after animation
                 setTimeout(function() {
                     if (currentLayer) {
-                        currentLayer.bindPopup('<strong>' + trackName + '</strong><br><small>Track highlighted in red</small>').openPopup();
+                        var tooltipContent = generateTooltipContent(trackInfo);
+                        currentLayer.bindPopup(tooltipContent, {
+                            maxWidth: 350,
+                            className: 'jogging-popup'
+                        }).openPopup();
                     }
                 }, 500);
             } catch (e) {
@@ -352,4 +545,142 @@
 
 @section Styles {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .jogging-tooltip {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 0;
+            min-width: 280px;
+            max-width: 320px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .tooltip-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .track-icon {
+            font-size: 18px;
+        }
+
+        .track-title {
+            flex: 1;
+        }
+
+        .track-name {
+            font-size: 14px;
+            color: #1a1a1a;
+            line-height: 1.2;
+        }
+
+        .track-region {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .track-badge .badge {
+            font-size: 10px;
+            padding: 4px 8px;
+        }
+
+        .tooltip-body {
+            padding: 12px 16px;
+        }
+
+        .track-stats .stat-item {
+            text-align: center;
+            padding: 8px 4px;
+            border-radius: 6px;
+            background: rgba(0,0,0,0.02);
+        }
+
+        .stat-item i {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .stat-item small {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-item strong {
+            font-size: 12px;
+            color: #1a1a1a;
+        }
+
+        .track-description {
+            background: rgba(0,0,0,0.02);
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .difficulty-indicator {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .difficulty-easy {
+            background: rgba(34, 197, 94, 0.1);
+            color: #16a34a;
+        }
+
+        .difficulty-moderate {
+            background: rgba(251, 191, 36, 0.1);
+            color: #d97706;
+        }
+
+        .difficulty-hard {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .track-surface {
+            font-size: 11px;
+        }
+
+        .tooltip-footer {
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.02);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            border-radius: 0 0 12px 12px;
+        }
+
+        /* Leaflet popup customization */
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .leaflet-popup-content {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .leaflet-popup-tip {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .jogging-popup .leaflet-popup-close-button {
+            color: #666;
+            font-size: 18px;
+            padding: 8px;
+            top: 8px;
+            right: 8px;
+        }
+    </style>
 }
