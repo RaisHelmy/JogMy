@@ -32,6 +32,34 @@
             <div class="card-body p-0">
                 <div id="map" style="height: 500px; width: 100%;"></div>
             </div>
+            <div class="card-footer bg-light">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <label for="mapTileSelect" class="form-label mb-0">
+                            <i class="bi bi-layers me-1"></i>Map Style:
+                        </label>
+                    </div>
+                    <div class="col-auto">
+                        <select id="mapTileSelect" class="form-select form-select-sm" onchange="changeMapTile(this.value)">
+                            <option value="openstreetmap">OpenStreetMap</option>
+                            <option value="cartodb-positron">CartoDB Positron</option>
+                            <option value="cartodb-darkmatter">CartoDB Dark Matter</option>
+                            <option value="cartodb-voyager">CartoDB Voyager</option>
+                            <option value="stamen-terrain">Stamen Terrain</option>
+                            <option value="stamen-toner">Stamen Toner</option>
+                            <option value="stamen-watercolor">Stamen Watercolor</option>
+                            <option value="esri-worldstreetmap">ESRI World Street Map</option>
+                            <option value="esri-worldtopographic">ESRI World Topographic</option>
+                            <option value="esri-worldimagery">ESRI World Imagery</option>
+                            <option value="wikimedia">Wikimedia</option>
+                            <option value="opentopomap">OpenTopoMap</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <small class="text-muted">Choose your preferred map style</small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -132,14 +160,69 @@
     <script>
         let map;
         let currentLayer;
+        let currentTileLayer;
+
+        // Define available map tiles
+        var mapTiles = {
+            'openstreetmap': {
+                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            },
+            'cartodb-positron': {
+                url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            },
+            'cartodb-darkmatter': {
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            },
+            'cartodb-voyager': {
+                url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            },
+            'stamen-terrain': {
+                url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png',
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            },
+            'stamen-toner': {
+                url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png',
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            },
+            'stamen-watercolor': {
+                url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png',
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            },
+            'esri-worldstreetmap': {
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+            },
+            'esri-worldtopographic': {
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+                attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+            },
+            'esri-worldimagery': {
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            },
+            'wikimedia': {
+                url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+                attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
+            },
+            'opentopomap': {
+                url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            }
+        };
 
         // Initialize map
         function initializeMap() {
             try {
                 map = L.map('map').setView([3.1319, 101.6841], 11); // Kuala Lumpur center
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                // Initialize with OpenStreetMap
+                var defaultTile = mapTiles['openstreetmap'];
+                currentTileLayer = L.tileLayer(defaultTile.url, {
+                    attribution: defaultTile.attribution
                 }).addTo(map);
 
                 // Load all tracks on map
@@ -235,8 +318,35 @@
             }, 100);
         });
 
-        // Make function globally accessible
+        // Function to change map tiles
+        function changeMapTile(tileKey) {
+            try {
+                if (!mapTiles[tileKey]) {
+                    console.error('Unknown tile key:', tileKey);
+                    return;
+                }
+
+                // Remove current tile layer
+                if (currentTileLayer) {
+                    map.removeLayer(currentTileLayer);
+                }
+
+                // Add new tile layer
+                var tileConfig = mapTiles[tileKey];
+                currentTileLayer = L.tileLayer(tileConfig.url, {
+                    attribution: tileConfig.attribution
+                }).addTo(map);
+
+                console.log('Changed map tile to:', tileKey);
+            } catch (e) {
+                console.error('Error changing map tile:', e);
+                alert('Error changing map style: ' + e.message);
+            }
+        }
+
+        // Make functions globally accessible
         window.showTrackOnMap = showTrackOnMap;
+        window.changeMapTile = changeMapTile;
     </script>
 }
 
