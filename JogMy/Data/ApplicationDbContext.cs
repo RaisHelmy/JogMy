@@ -15,6 +15,7 @@ namespace JogMy.Data
         public DbSet<ActivityComment> ActivityComments { get; set; }
         public DbSet<ActivityLike> ActivityLikes { get; set; }
         public DbSet<ActivityMedia> ActivityMedia { get; set; }
+        public DbSet<TrackMedia> TrackMedia { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -100,6 +101,21 @@ namespace JogMy.Data
                 entity.HasOne(e => e.ActivityPost)
                     .WithMany(p => p.MediaFiles)
                     .HasForeignKey(e => e.ActivityPostId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // TrackMedia configuration
+            builder.Entity<TrackMedia>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.FilePath).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.MediaType).IsRequired();
+                entity.Property(e => e.OrderIndex).IsRequired();
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
+                
+                entity.HasOne(e => e.JoggingTrack)
+                    .WithMany(t => t.MediaFiles)
+                    .HasForeignKey(e => e.JoggingTrackId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
         }

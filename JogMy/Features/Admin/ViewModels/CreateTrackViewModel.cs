@@ -54,5 +54,8 @@ namespace JogMy.Features.Admin.ViewModels
         [Display(Name = "Safety Notes")]
         [MaxLength(300)]
         public string? SafetyNotes { get; set; }
+
+        [Display(Name = "Track Photos/Videos")]
+        public List<IFormFile>? MediaFiles { get; set; }
     }
 }

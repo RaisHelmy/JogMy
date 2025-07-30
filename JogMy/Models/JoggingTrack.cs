@@ -47,5 +47,8 @@ namespace JogMy.Models
         public string? SafetyNotes { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Navigation property for media files
+        public List<TrackMedia> MediaFiles { get; set; } = new();
     }
 }

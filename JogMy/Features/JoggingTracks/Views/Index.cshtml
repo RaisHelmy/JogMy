@@ -158,6 +158,38 @@
     </div>
 </div>
 
+<!-- Tooltip Gallery Modal -->
+<div id="tooltipGalleryModal" class="gallery-modal" style="display: none;">
+    <div class="gallery-backdrop" onclick="closeTooltipGallery()"></div>
+    <div class="gallery-container">
+        <button class="gallery-close" onclick="closeTooltipGallery()" title="Close (Esc)">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        
+        <div class="gallery-content">
+            <button class="gallery-nav gallery-nav-prev" onclick="navigateTooltipGallery(-1)" title="Previous (←)">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            
+            <div class="gallery-media-container">
+                <div id="tooltipGalleryMedia" class="gallery-media"></div>
+                <div class="gallery-counter">
+                    <span id="tooltipGalleryCounter">1 / 1</span>
+                </div>
+            </div>
+            
+            <button class="gallery-nav gallery-nav-next" onclick="navigateTooltipGallery(1)" title="Next (→)">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+        
+        <div class="gallery-info">
+            <h6 id="tooltipGalleryTitle" class="gallery-title mb-0"></h6>
+            <small id="tooltipGalleryRegion" class="text-muted"></small>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -250,7 +282,13 @@
                                 hasParking: @(track.HasParking.ToString().ToLower()),
                                 hasWaterFountains: @(track.HasWaterFountains.ToString().ToLower()),
                                 hasRestrooms: @(track.HasRestrooms.ToString().ToLower()),
-                                isWellLit: @(track.IsWellLit.ToString().ToLower())
+                                isWellLit: @(track.IsWellLit.ToString().ToLower()),
+                                mediaFiles: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(track.MediaFiles.Select(m => new { 
+                                    id = m.Id, 
+                                    filePath = m.FilePath, 
+                                    mediaType = (int)m.MediaType, 
+                                    orderIndex = m.OrderIndex 
+                                }).ToList()))
                             };
                             
                             // Add Google and Waze buttons to the Available Tracks panel
@@ -282,7 +320,7 @@
                                 opacity: 0.7
                             }).addTo(map);
                             
-                            var tooltipContent = generateTooltipContent(trackData[@track.Id]);
+                            var tooltipContent = generateTooltipContent(trackData[@track.Id], @track.Id);
                             polyline.bindPopup(tooltipContent, {
                                 maxWidth: 350,
                                 className: 'jogging-popup'
@@ -335,8 +373,88 @@
             }
         }
         
+        // Function to generate Google Maps-style media grid with clickable functionality
+        function generateMediaGrid(mediaFiles, trackId) {
+            if (!mediaFiles || mediaFiles.length === 0) return '';
+            
+            const maxVisible = 4; // Maximum visible photos like Google Maps
+            const visibleMedia = mediaFiles.slice(0, maxVisible);
+            const remainingCount = mediaFiles.length - maxVisible;
+            
+            let gridHtml = '';
+            
+            if (visibleMedia.length === 1) {
+                // Single image - full width
+                const media = visibleMedia[0];
+                gridHtml = `
+                    <div class="media-single">
+                        ${media.mediaType === 1 
+                            ? `<video src="${media.filePath}" class="media-thumb clickable-media" data-track-id="${trackId}" data-media-index="0" controls></video>`
+                            : `<img src="${media.filePath}" alt="Track photo" class="media-thumb clickable-media" data-track-id="${trackId}" data-media-index="0" />`
+                        }
+                    </div>
+                `;
+            } else if (visibleMedia.length === 2) {
+                // Two images side by side
+                gridHtml = '<div class="media-row">';
+                visibleMedia.forEach((media, index) => {
+                    gridHtml += `
+                        <div class="media-item-half">
+                            ${media.mediaType === 1 
+                                ? `<video src="${media.filePath}" class="media-thumb clickable-media" data-track-id="${trackId}" data-media-index="${index}"></video>`
+                                : `<img src="${media.filePath}" alt="Track photo" class="media-thumb clickable-media" data-track-id="${trackId}" data-media-index="${index}" />`
+                            }
+                        </div>
+                    `;
+                });
+                gridHtml += '</div>';
+            } else if (visibleMedia.length === 3) {
+                // First image full left, two stacked right
+                const firstMedia = visibleMedia[0];
+                gridHtml = `
+                    <div class="media-row">
+                        <div class="media-item-left">
+                            ${firstMedia.mediaType === 1 
+                                ? `<video src="${firstMedia.filePath}" class="media-thumb clickable-media" data-track-id="${trackId}" data-media-index="0"></video>`
+                                : `<img src="${firstMedia.filePath}" alt="Track photo" class="media-thumb clickable-media" data-track-id="${trackId}" data-media-index="0" />`
+                            }
+                        </div>
+                        <div class="media-stack-right">
+                `;
+                visibleMedia.slice(1).forEach((media, index) => {
+                    gridHtml += `
+                        <div class="media-item-stack">
+                            ${media.mediaType === 1 
+                                ? `<video src="${media.filePath}" class="media-thumb clickable-media" data-track-id="${trackId}" data-media-index="${index + 1}"></video>`
+                                : `<img src="${media.filePath}" alt="Track photo" class="media-thumb clickable-media" data-track-id="${trackId}" data-media-index="${index + 1}" />`
+                            }
+                        </div>
+                    `;
+                });
+                gridHtml += '</div></div>';
+            } else {
+                // Four or more: 2x2 grid with overlay on last item
+                gridHtml = '<div class="media-grid-4">';
+                visibleMedia.forEach((media, index) => {
+                    const isLast = index === 3 && remainingCount > 0;
+                    gridHtml += `
+                        <div class="media-item-quarter ${isLast ? 'has-overlay' : ''}">
+                            ${media.mediaType === 1 
+                                ? `<video src="${media.filePath}" class="media-thumb clickable-media" data-track-id="${trackId}" data-media-index="${index}"></video>`
+                                : `<img src="${media.filePath}" alt="Track photo" class="media-thumb clickable-media" data-track-id="${trackId}" data-media-index="${index}" />`
+                            }
+                            ${isLast ? `<div class="media-overlay clickable-media" data-track-id="${trackId}" data-media-index="${index}">+${remainingCount}</div>` : ''}
+                        </div>
+                    `;
+                });
+                gridHtml += '</div>';
+            }
+            
+            return gridHtml;
+        }
+
         // Function to generate beautiful tooltip content with custom data
-        function generateTooltipContent(trackData) {
+        function generateTooltipContent(trackData, trackId) {
             var estimatedTime = calculateEstimatedTime(trackData.distance);
             var estimatedCalories = calculateEstimatedCalories(trackData.distance);
             
@@ -404,6 +522,14 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        ${trackData.mediaFiles && trackData.mediaFiles.length > 0 ? `
+                        <div class="track-media-preview mt-3">
+                            <div class="media-grid-tooltip">
+                                ${generateMediaGrid(trackData.mediaFiles, trackId)}
+                            </div>
+                        </div>
+                        ` : ''}
                         
                         ${hasDescription ? `
                         <div class="track-description mt-2">
@@ -545,7 +671,7 @@
                 // Show beautiful popup at track center after animation
                 setTimeout(function() {
                     if (currentLayer) {
-                        var tooltipContent = generateTooltipContent(trackInfo);
+                        var tooltipContent = generateTooltipContent(trackInfo, trackId);
                         currentLayer.bindPopup(tooltipContent, {
                             maxWidth: 350,
                             className: 'jogging-popup'
@@ -592,9 +718,136 @@
             }
         }
 
+        // Tooltip Gallery Modal Variables
+        let tooltipGalleryCurrentTrackId = null;
+        let tooltipGalleryCurrentIndex = 0;
+        let tooltipGalleryMediaFiles = [];
+
+        // Function to open tooltip gallery modal
+        function openTooltipGallery(trackId, mediaIndex) {
+            const trackInfo = trackData[trackId];
+            if (!trackInfo || !trackInfo.mediaFiles || trackInfo.mediaFiles.length === 0) {
+                return;
+            }
+
+            tooltipGalleryCurrentTrackId = trackId;
+            tooltipGalleryCurrentIndex = parseInt(mediaIndex) || 0;
+            tooltipGalleryMediaFiles = trackInfo.mediaFiles;
+
+            // Update modal title
+            document.getElementById('tooltipGalleryTitle').textContent = trackInfo.name;
+            document.getElementById('tooltipGalleryRegion').textContent = trackInfo.region;
+
+            // Show the modal
+            document.getElementById('tooltipGalleryModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            // Display current media
+            displayTooltipGalleryMedia();
+
+            // Add keyboard event listener
+            document.addEventListener('keydown', handleTooltipGalleryKeydown);
+        }
+
+        // Function to close tooltip gallery modal
+        function closeTooltipGallery() {
+            document.getElementById('tooltipGalleryModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+            // Remove keyboard event listener
+            document.removeEventListener('keydown', handleTooltipGalleryKeydown);
+            
+            tooltipGalleryCurrentTrackId = null;
+            tooltipGalleryCurrentIndex = 0;
+            tooltipGalleryMediaFiles = [];
+        }
+
+        // Function to navigate tooltip gallery
+        function navigateTooltipGallery(direction) {
+            if (!tooltipGalleryMediaFiles || tooltipGalleryMediaFiles.length === 0) return;
+
+            tooltipGalleryCurrentIndex += direction;
+
+            // Wrap around
+            if (tooltipGalleryCurrentIndex < 0) {
+                tooltipGalleryCurrentIndex = tooltipGalleryMediaFiles.length - 1;
+            } else if (tooltipGalleryCurrentIndex >= tooltipGalleryMediaFiles.length) {
+                tooltipGalleryCurrentIndex = 0;
+            }
+
+            displayTooltipGalleryMedia();
+        }
+
+        // Function to display current media in tooltip gallery
+        function displayTooltipGalleryMedia() {
+            if (!tooltipGalleryMediaFiles || tooltipGalleryMediaFiles.length === 0) return;
+
+            const currentMedia = tooltipGalleryMediaFiles[tooltipGalleryCurrentIndex];
+            const mediaContainer = document.getElementById('tooltipGalleryMedia');
+            const counterElement = document.getElementById('tooltipGalleryCounter');
+
+            // Update counter
+            counterElement.textContent = `${tooltipGalleryCurrentIndex + 1} / ${tooltipGalleryMediaFiles.length}`;
+
+            // Display media
+            if (currentMedia.mediaType === 1) { // Video
+                mediaContainer.innerHTML = `
+                    <video src="${currentMedia.filePath}" class="gallery-media-item" controls autoplay muted>
+                        Your browser does not support the video tag.
+                    </video>
+                `;
+            } else { // Image
+                mediaContainer.innerHTML = `
+                    <img src="${currentMedia.filePath}" alt="Track photo" class="gallery-media-item" />
+                `;
+            }
+
+            // Show/hide navigation buttons
+            const prevBtn = document.querySelector('.gallery-nav-prev');
+            const nextBtn = document.querySelector('.gallery-nav-next');
+            
+            if (tooltipGalleryMediaFiles.length <= 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'flex';
+                nextBtn.style.display = 'flex';
+            }
+        }
+
+        // Function to handle keyboard navigation
+        function handleTooltipGalleryKeydown(event) {
+            switch(event.key) {
+                case 'Escape':
+                    closeTooltipGallery();
+                    break;
+                case 'ArrowLeft':
+                    navigateTooltipGallery(-1);
+                    break;
+                case 'ArrowRight':
+                    navigateTooltipGallery(1);
+                    break;
+            }
+        }
+
+        // Add click event listener for clickable media in tooltips
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('clickable-media')) {
+                const trackId = event.target.getAttribute('data-track-id');
+                const mediaIndex = event.target.getAttribute('data-media-index');
+                
+                if (trackId && mediaIndex !== null) {
+                    openTooltipGallery(parseInt(trackId), parseInt(mediaIndex));
+                }
+            }
+        });
+
         // Make functions globally accessible
         window.showTrackOnMap = showTrackOnMap;
         window.changeMapTile = changeMapTile;
+        window.openTooltipGallery = openTooltipGallery;
+        window.closeTooltipGallery = closeTooltipGallery;
+        window.navigateTooltipGallery = navigateTooltipGallery;
     </script>
 }
 
@@ -736,6 +989,330 @@
             padding: 8px;
             top: 8px;
             right: 8px;
+        }
+
+        /* Google Maps-style Media Grid */
+        .track-media-preview {
+            border-radius: 8px;
+            overflow: hidden;
+            max-height: 120px;
+        }
+
+        .media-grid-tooltip {
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .media-thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .media-thumb:hover {
+            transform: scale(1.05);
+        }
+
+        /* Single image layout */
+        .media-single {
+            height: 120px;
+            width: 100%;
+        }
+
+        /* Two images layout */
+        .media-row {
+            display: flex;
+            gap: 2px;
+            height: 120px;
+        }
+
+        .media-item-half {
+            flex: 1;
+            height: 100%;
+        }
+
+        /* Three images layout */
+        .media-item-left {
+            flex: 2;
+            height: 100%;
+        }
+
+        .media-stack-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            height: 100%;
+        }
+
+        .media-item-stack {
+            flex: 1;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        /* Four or more images layout */
+        .media-grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            height: 120px;
+        }
+
+        .media-item-quarter {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .media-item-quarter.has-overlay {
+            position: relative;
+        }
+
+        .media-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 4px;
+        }
+
+        .media-overlay:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Mobile responsive adjustments */
+        @@media (max-width: 480px) {
+            .media-grid-tooltip {
+                height: 100px;
+            }
+            
+            .track-media-preview {
+                max-height: 100px;
+            }
+            
+            .media-single,
+            .media-row,
+            .media-grid-4 {
+                height: 100px;
+            }
+            
+            .media-overlay {
+                font-size: 16px;
+            }
+        }
+
+        /* Tooltip Gallery Modal Styles */
+        .gallery-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .gallery-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+        }
+
+        .gallery-container {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 10001;
+        }
+
+        .gallery-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+            z-index: 10002;
+        }
+
+        .gallery-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .gallery-content {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .gallery-media-container {
+            position: relative;
+            max-width: 80vw;
+            max-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-media {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        .gallery-media-item {
+            max-width: 100%;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .gallery-counter {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .gallery-nav {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .gallery-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .gallery-nav:active {
+            transform: scale(0.95);
+        }
+
+        .gallery-nav-prev {
+            margin-left: -25px;
+        }
+
+        .gallery-nav-next {
+            margin-right: -25px;
+        }
+
+        .gallery-info {
+            margin-top: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .gallery-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Mobile responsive adjustments for gallery */
+        @@media (max-width: 768px) {
+            .gallery-container {
+                max-width: 95vw;
+                max-height: 95vh;
+            }
+
+            .gallery-media-container {
+                max-width: 90vw;
+                max-height: 70vh;
+            }
+
+            .gallery-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .gallery-close {
+                top: -40px;
+                right: -10px;
+                width: 36px;
+                height: 36px;
+                font-size: 20px;
+            }
+
+            .gallery-counter {
+                bottom: -30px;
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .gallery-info {
+                margin-top: 15px;
+            }
+
+            .gallery-title {
+                font-size: 16px;
+            }
         }
     </style>
 }

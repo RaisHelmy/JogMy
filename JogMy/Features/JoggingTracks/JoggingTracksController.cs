@@ -17,7 +17,9 @@ namespace JogMy.Features.JoggingTracks
 
         public async Task<IActionResult> Index()
         {
-            var tracks = await _context.JoggingTracks.ToListAsync();
+            var tracks = await _context.JoggingTracks
+                .Include(t => t.MediaFiles.OrderBy(m => m.OrderIndex))
+                .ToListAsync();
             return View(tracks);
         }
 
