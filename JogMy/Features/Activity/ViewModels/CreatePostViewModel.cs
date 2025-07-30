@@ -26,6 +26,9 @@ namespace JogMy.Features.Activity.ViewModels
         [Display(Name = "Duration")]
         public string? DurationInput { get; set; } // Format: HH:mm
 
+        [Display(Name = "Track/Route")]
+        public int? SelectedTrackId { get; set; }
+
         [Display(Name = "Route/Location")]
         [MaxLength(200)]
         public string? Route { get; set; }

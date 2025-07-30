@@ -95,6 +95,21 @@ namespace JogMy.Features.Activity
                 duration = parsedDuration;
             }
 
+            // Get route name and distance from selected track if provided
+            string? routeName = createPost.Route;
+            double? trackDistance = createPost.Distance;
+            
+            if (createPost.SelectedTrackId.HasValue)
+            {
+                var selectedTrack = await _context.JoggingTracks
+                    .FirstOrDefaultAsync(t => t.Id == createPost.SelectedTrackId.Value);
+                if (selectedTrack != null)
+                {
+                    routeName = selectedTrack.Name;
+                    trackDistance = selectedTrack.Distance;
+                }
+            }
+
             var post = new ActivityPost
             {
                 UserId = userId,
@@ -102,9 +117,9 @@ namespace JogMy.Features.Activity
                 ImagePath = imagePath,
                 VideoPath = videoPath,
                 Privacy = createPost.Privacy,
-                Distance = createPost.Distance,
+                Distance = trackDistance,
                 Duration = duration,
-                Route = createPost.Route,
+                Route = routeName,
                 ActivityDate = createPost.ActivityDate,
                 CreatedAt = DateTime.UtcNow
             };
@@ -249,6 +264,11 @@ namespace JogMy.Features.Activity
                 .Where(p => p.UserId == userId)
                 .CountAsync();
 
+            // Get available tracks for dropdown
+            var availableTracks = await _context.JoggingTracks
+                .OrderBy(t => t.Name)
+                .ToListAsync();
+
             // Get only the latest 5 posts for the timeline preview
             var posts = await _context.ActivityPosts
                 .Include(p => p.User)
@@ -262,8 +282,9 @@ namespace JogMy.Features.Activity
 
             return new MyActivityViewModel
             {
-                CurrentUserId = userId,
+                CurrentUserId = userId,  
                 TotalPosts = totalPosts,
+                AvailableTracks = availableTracks,
                 Posts = posts.Select(p => new ActivityPostViewModel
                 {
                     Id = p.Id,

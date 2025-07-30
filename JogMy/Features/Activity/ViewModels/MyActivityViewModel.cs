@@ -6,6 +6,7 @@ namespace JogMy.Features.Activity.ViewModels
     {
         public CreatePostViewModel CreatePost { get; set; } = new();
         public List<ActivityPostViewModel> Posts { get; set; } = new();
+        public List<JoggingTrack> AvailableTracks { get; set; } = new();
         public string CurrentUserId { get; set; } = string.Empty;
         public int TotalPosts { get; set; }
         

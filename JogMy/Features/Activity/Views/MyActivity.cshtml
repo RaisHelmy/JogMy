@@ -296,6 +296,31 @@
                 transform: scale(1);
             }
         }
+
+        .track-dropdown {
+            position: relative;
+        }
+
+        .track-dropdown option {
+            padding: 8px 12px;
+        }
+
+        .track-dropdown:focus {
+            border-color: #1877f2;
+            box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+        }
+
+        .track-selected {
+            background-color: #e3f2fd !important;
+            border-color: #1877f2 !important;
+        }
+
+        .distance-readonly {
+            background-color: #e3f2fd !important;
+            border-color: #1877f2 !important;
+            color: #1565c0 !important;
+            font-weight: 600;
+        }
     </style>
 }
 
@@ -373,8 +398,17 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label asp-for="CreatePost.Distance" class="form-label">Distance (km)</label>
-                                            <input asp-for="CreatePost.Distance" class="form-control" step="0.1" />
+                                            <label asp-for="CreatePost.SelectedTrackId" class="form-label">Select Track</label>
+                                            <select asp-for="CreatePost.SelectedTrackId" class="form-select track-dropdown" id="trackSelect" onchange="updateTrackDetails()">
+                                                <option value="">-- Select a track or enter custom route --</option>
+                                                @foreach (var track in Model.AvailableTracks)
+                                                {
+                                                    <option value="@track.Id" data-distance="@track.Distance.ToString("F1")" data-name="@track.Name" data-region="@track.Region">
+                                                        @track.Name (@track.Distance.ToString("F1") km) - @track.Region
+                                                    </option>
+                                                }
+                                            </select>
+                                            <small class="text-muted">Search by typing track name</small>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -387,10 +421,20 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label asp-for="CreatePost.Route" class="form-label">Route/Location</label>
-                                            <input asp-for="CreatePost.Route" class="form-control" />
+                                            <label asp-for="CreatePost.Route" class="form-label">Custom Route/Location</label>
+                                            <input asp-for="CreatePost.Route" class="form-control" id="customRoute" placeholder="Enter custom route or location" />
+                                            <small class="text-muted">Leave empty if using selected track above</small>
                                         </div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="CreatePost.Distance" class="form-label">Distance (km)</label>
+                                            <input asp-for="CreatePost.Distance" class="form-control" id="distanceField" step="0.1" readonly style="background-color: #f8f9fa;" />
+                                            <small class="text-muted">Auto-filled from selected track</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label asp-for="CreatePost.ActivityDate" class="form-label">Activity Date</label>
@@ -633,6 +677,42 @@
             details.style.display = details.style.display === 'none' ? 'block' : 'none';
         }
 
+        function updateTrackDetails() {
+            const trackSelect = document.getElementById('trackSelect');
+            const distanceField = document.getElementById('distanceField');
+            const customRoute = document.getElementById('customRoute');
+            
+            const selectedOption = trackSelect.options[trackSelect.selectedIndex];
+            
+            if (selectedOption.value) {
+                // Track selected - populate distance and clear custom route
+                const distance = selectedOption.getAttribute('data-distance');
+                const trackName = selectedOption.getAttribute('data-name');
+                
+                distanceField.value = distance;
+                customRoute.value = '';
+                customRoute.disabled = true;
+                customRoute.style.backgroundColor = '#f8f9fa';
+                customRoute.placeholder = `Using "${trackName}" track`;
+                
+                // Make distance field readonly with selected track styling
+                distanceField.readonly = true;
+                distanceField.style.backgroundColor = '#e3f2fd';
+                distanceField.style.borderColor = '#1877f2';
+            } else {
+                // No track selected - allow manual entry
+                distanceField.value = '';
+                customRoute.disabled = false;
+                customRoute.style.backgroundColor = '';
+                customRoute.placeholder = 'Enter custom route or location';
+                
+                // Allow manual distance entry
+                distanceField.readonly = false;
+                distanceField.style.backgroundColor = '';
+                distanceField.style.borderColor = '';
+            }
+        }
+
         function previewFile(input, type) {
             const preview = document.getElementById('filePreview');
             if (input.files && input.files[0]) {
@@ -834,7 +914,23 @@
                 // Clear all form inputs
                 document.querySelectorAll('#activityDetails input').forEach(input => {
                     input.value = '';
+                    input.disabled = false;
+                    input.readonly = false;
+                    input.style.backgroundColor = '';
+                    input.style.borderColor = '';
                 });
+                
+                // Reset track dropdown
+                const trackSelect = document.getElementById('trackSelect');
+                if (trackSelect) trackSelect.value = '';
+                
+                // Reset custom route field
+                const customRoute = document.getElementById('customRoute');
+                if (customRoute) {
+                    customRoute.disabled = false;
+                    customRoute.style.backgroundColor = '';
+                    customRoute.placeholder = 'Enter custom route or location';
+                }
                 
                 // Reset file inputs
                 const imageUpload = document.getElementById('imageUpload');
