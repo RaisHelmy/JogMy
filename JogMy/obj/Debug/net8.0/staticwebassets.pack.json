@@ -245,6 +245,14 @@
       "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.map"
     },
     {
+      "Id": "/Users/raishelmy/Documents/JogMy/JogMy/wwwroot/uploads/covers/f627df7f-86ec-4f4f-a60d-65703b0f1236_524875880_24590256563931514_131529319394546942_n.jpg",
+      "PackagePath": "staticwebassets/uploads/covers/f627df7f-86ec-4f4f-a60d-65703b0f1236_524875880_24590256563931514_131529319394546942_n.jpg"
+    },
+    {
+      "Id": "/Users/raishelmy/Documents/JogMy/JogMy/wwwroot/uploads/profiles/8b6de4d9-184b-4d14-9536-2aac70bc233f_ChatGPT_Image_Jul_24,_2025,_11_27_01_AM.png",
+      "PackagePath": "staticwebassets/uploads/profiles/8b6de4d9-184b-4d14-9536-2aac70bc233f_ChatGPT_Image_Jul_24,_2025,_11_27_01_AM.png"
+    },
+    {
       "Id": "obj/Debug/net8.0/staticwebassets/msbuild.JogMy.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },

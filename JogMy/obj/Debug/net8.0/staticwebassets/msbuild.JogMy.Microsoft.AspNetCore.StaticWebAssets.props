@@ -976,5 +976,37 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\lib\jquery\LICENSE.txt))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\covers\f627df7f-86ec-4f4f-a60d-65703b0f1236_524875880_24590256563931514_131529319394546942_n.jpg))">
+      <SourceType>Package</SourceType>
+      <SourceId>JogMy</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/JogMy</BasePath>
+      <RelativePath>uploads/covers/f627df7f-86ec-4f4f-a60d-65703b0f1236_524875880_24590256563931514_131529319394546942_n.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\covers\f627df7f-86ec-4f4f-a60d-65703b0f1236_524875880_24590256563931514_131529319394546942_n.jpg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\profiles\8b6de4d9-184b-4d14-9536-2aac70bc233f_ChatGPT_Image_Jul_24,_2025,_11_27_01_AM.png))">
+      <SourceType>Package</SourceType>
+      <SourceId>JogMy</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/JogMy</BasePath>
+      <RelativePath>uploads/profiles/8b6de4d9-184b-4d14-9536-2aac70bc233f_ChatGPT_Image_Jul_24,_2025,_11_27_01_AM.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\profiles\8b6de4d9-184b-4d14-9536-2aac70bc233f_ChatGPT_Image_Jul_24,_2025,_11_27_01_AM.png))</OriginalItemSpec>
+    </StaticWebAsset>
   </ItemGroup>
 </Project>

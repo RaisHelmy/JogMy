@@ -10,7 +10,9 @@
       "Bash(dotnet ef database:*)",
       "Bash(rm:*)",
       "Bash(dotnet run)",
-      "Bash(dotnet run:*)"
+      "Bash(dotnet run:*)",
+      "Bash(sqlite3:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }

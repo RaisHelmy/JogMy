@@ -10,10 +10,36 @@ namespace JogMy.Features.Activity.ViewModels
         public string CurrentUserId { get; set; } = string.Empty;
         public int TotalPosts { get; set; }
         
+        // User profile information
+        public UserProfileViewModel Profile { get; set; } = new();
+        
         // Quick stats for dashboard
         public double TotalDistance => Posts.Sum(p => p.Distance ?? 0);
         public int TotalLikes => Posts.Sum(p => p.LikesCount);
         public int TotalComments => Posts.Sum(p => p.Comments.Count);
+    }
+
+    public class UserProfileViewModel
+    {
+        public string UserId { get; set; } = string.Empty;
+        public string? FullName { get; set; }
+        public string? Email { get; set; }
+        public string? Bio { get; set; }
+        public string? Location { get; set; }
+        public string? ProfilePicturePath { get; set; }
+        public string? CoverPhotoPath { get; set; }
+        public string? Website { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? FavoriteRunningTime { get; set; }
+        public double? WeeklyDistance { get; set; }
+        public string? FavoriteRoute { get; set; }
+        public DateTime JoinedAt { get; set; }
+        
+        // Calculated properties
+        public string DisplayName => !string.IsNullOrEmpty(FullName) ? FullName : Email?.Split('@')[0] ?? "User";
+        public string ProfileInitials => DisplayName.Split(' ').Take(2).Select(n => n[0]).DefaultIfEmpty('U').Aggregate("", (a, b) => a + b).ToUpper();
+        public string FormattedJoinDate => JoinedAt.ToString("MMMM yyyy");
+        public int Age => DateOfBirth.HasValue ? DateTime.Now.Year - DateOfBirth.Value.Year : 0;
     }
 
     public class ActivityPostViewModel

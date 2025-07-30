@@ -200,6 +200,106 @@ namespace JogMy.Features.Activity
             });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> EditProfile()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ProfileEditViewModel
+            {
+                FullName = user.FullName,
+                Bio = user.Bio,
+                Location = user.Location,
+                Website = user.Website,
+                DateOfBirth = user.DateOfBirth,
+                FavoriteRunningTime = user.FavoriteRunningTime,
+                WeeklyDistance = user.WeeklyDistance,
+                FavoriteRoute = user.FavoriteRoute,
+                CurrentProfilePicturePath = user.ProfilePicturePath,
+                CurrentCoverPhotoPath = user.CoverPhotoPath,
+                Email = user.Email,
+                JoinedAt = user.JoinedAt
+            };
+
+            return PartialView("_EditProfileModal", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(ProfileEditViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return PartialView("_EditProfileModal", model);
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Update user properties
+            user.FullName = model.FullName;
+            user.Bio = model.Bio;
+            user.Location = model.Location;
+            user.Website = model.Website;
+            user.DateOfBirth = model.DateOfBirth;
+            user.FavoriteRunningTime = model.FavoriteRunningTime;
+            user.WeeklyDistance = model.WeeklyDistance;
+            user.FavoriteRoute = model.FavoriteRoute;
+
+            // Handle profile picture upload
+            if (model.ProfilePicture != null)
+            {
+                // Delete old profile picture if exists
+                if (!string.IsNullOrEmpty(user.ProfilePicturePath))
+                {
+                    DeleteFile(user.ProfilePicturePath);
+                }
+
+                // Save new profile picture
+                user.ProfilePicturePath = await SaveFileAsync(model.ProfilePicture, "profiles");
+            }
+
+            // Handle cover photo upload
+            if (model.CoverPhoto != null)
+            {
+                // Delete old cover photo if exists
+                if (!string.IsNullOrEmpty(user.CoverPhotoPath))
+                {
+                    DeleteFile(user.CoverPhotoPath);
+                }
+
+                // Save new cover photo
+                user.CoverPhotoPath = await SaveFileAsync(model.CoverPhoto, "covers");
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                TempData["Success"] = "Profile updated successfully!";
+                return Json(new { success = true });
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return PartialView("_EditProfileModal", model);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> DeletePost(int id)
         {
@@ -259,6 +359,7 @@ namespace JogMy.Features.Activity
         private async Task<MyActivityViewModel> GetMyActivityViewModel()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var user = await _userManager.FindByIdAsync(userId);
 
             var totalPosts = await _context.ActivityPosts
                 .Where(p => p.UserId == userId)
@@ -285,6 +386,22 @@ namespace JogMy.Features.Activity
                 CurrentUserId = userId,  
                 TotalPosts = totalPosts,
                 AvailableTracks = availableTracks,
+                Profile = new UserProfileViewModel
+                {
+                    UserId = userId,
+                    FullName = user?.FullName,
+                    Email = user?.Email,
+                    Bio = user?.Bio,
+                    Location = user?.Location,
+                    ProfilePicturePath = user?.ProfilePicturePath,
+                    CoverPhotoPath = user?.CoverPhotoPath,
+                    Website = user?.Website,
+                    DateOfBirth = user?.DateOfBirth,
+                    FavoriteRunningTime = user?.FavoriteRunningTime,
+                    WeeklyDistance = user?.WeeklyDistance,
+                    FavoriteRoute = user?.FavoriteRoute,
+                    JoinedAt = user?.JoinedAt ?? DateTime.UtcNow
+                },
                 Posts = posts.Select(p => new ActivityPostViewModel
                 {
                     Id = p.Id,

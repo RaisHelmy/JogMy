@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "wK7psVFrFssS3tuHSNGaHh3qGgR72sq9o82evTkIHe0=",
+  "Hash": "3vPTxT3OY54A1wTURehIUeFraHrhUTrAcEF03ObYn+k=",
   "Source": "JogMy",
   "BasePath": "_content/JogMy",
   "Mode": "Default",
@@ -1193,6 +1193,44 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/lib/jquery/LICENSE.txt"
+    },
+    {
+      "Identity": "/Users/raishelmy/Documents/JogMy/JogMy/wwwroot/uploads/covers/f627df7f-86ec-4f4f-a60d-65703b0f1236_524875880_24590256563931514_131529319394546942_n.jpg",
+      "SourceId": "JogMy",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/raishelmy/Documents/JogMy/JogMy/wwwroot/",
+      "BasePath": "_content/JogMy",
+      "RelativePath": "uploads/covers/f627df7f-86ec-4f4f-a60d-65703b0f1236_524875880_24590256563931514_131529319394546942_n.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/uploads/covers/f627df7f-86ec-4f4f-a60d-65703b0f1236_524875880_24590256563931514_131529319394546942_n.jpg"
+    },
+    {
+      "Identity": "/Users/raishelmy/Documents/JogMy/JogMy/wwwroot/uploads/profiles/8b6de4d9-184b-4d14-9536-2aac70bc233f_ChatGPT_Image_Jul_24,_2025,_11_27_01_AM.png",
+      "SourceId": "JogMy",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/raishelmy/Documents/JogMy/JogMy/wwwroot/",
+      "BasePath": "_content/JogMy",
+      "RelativePath": "uploads/profiles/8b6de4d9-184b-4d14-9536-2aac70bc233f_ChatGPT_Image_Jul_24,_2025,_11_27_01_AM.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/uploads/profiles/8b6de4d9-184b-4d14-9536-2aac70bc233f_ChatGPT_Image_Jul_24,_2025,_11_27_01_AM.png"
     }
   ]
 }

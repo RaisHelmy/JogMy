@@ -1,0 +1,142 @@
+@model JogMy.Features.Activity.ViewModels.ProfileEditViewModel
+
+<form id="editProfileForm" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-md-6">
+            <div class="profile-form-group">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="profile-form-group">
+                <label asp-for="Bio" class="form-label"></label>
+                <textarea asp-for="Bio" class="form-control" rows="3" placeholder="Tell us about yourself and your jogging journey..."></textarea>
+                <span asp-validation-for="Bio" class="text-danger"></span>
+            </div>
+
+            <div class="profile-form-group">
+                <label asp-for="Location" class="form-label"></label>
+                <input asp-for="Location" class="form-control" placeholder="City, Country" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+
+            <div class="profile-form-group">
+                <label asp-for="Website" class="form-label"></label>
+                <input asp-for="Website" class="form-control" placeholder="https://yourwebsite.com" />
+                <span asp-validation-for="Website" class="text-danger"></span>
+            </div>
+
+            <div class="profile-form-group">
+                <label asp-for="DateOfBirth" class="form-label"></label>
+                <input asp-for="DateOfBirth" type="date" class="form-control" />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-md-6">
+            <div class="profile-form-group">
+                <label asp-for="FavoriteRunningTime" class="form-label"></label>
+                <select asp-for="FavoriteRunningTime" class="form-select">
+                    <option value="">Select preferred time</option>
+                    <option value="Early Morning">Early Morning (5-7 AM)</option>
+                    <option value="Morning">Morning (7-10 AM)</option>
+                    <option value="Late Morning">Late Morning (10-12 PM)</option>
+                    <option value="Afternoon">Afternoon (12-5 PM)</option>
+                    <option value="Evening">Evening (5-8 PM)</option>
+                    <option value="Night">Night (8-11 PM)</option>
+                    <option value="Anytime">Anytime</option>
+                </select>
+                <span asp-validation-for="FavoriteRunningTime" class="text-danger"></span>
+            </div>
+
+            <div class="profile-form-group">
+                <label asp-for="WeeklyDistance" class="form-label"></label>
+                <div class="input-group">
+                    <input asp-for="WeeklyDistance" type="number" step="0.1" class="form-control" placeholder="0.0" />
+                    <span class="input-group-text">km</span>
+                </div>
+                <span asp-validation-for="WeeklyDistance" class="text-danger"></span>
+            </div>
+
+            <div class="profile-form-group">
+                <label asp-for="FavoriteRoute" class="form-label"></label>
+                <input asp-for="FavoriteRoute" class="form-control" placeholder="Park trail, beach path, etc." />
+                <span asp-validation-for="FavoriteRoute" class="text-danger"></span>
+            </div>
+
+            <div class="profile-form-group">
+                <label asp-for="ProfilePicture" class="form-label"></label>
+                <input asp-for="ProfilePicture" type="file" class="form-control" accept="image/*" />
+                <small class="text-muted">Leave empty to keep current photo</small>
+                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+            </div>
+
+            <div class="profile-form-group">
+                <label asp-for="CoverPhoto" class="form-label"></label>
+                <input asp-for="CoverPhoto" type="file" class="form-control" accept="image/*" />
+                <small class="text-muted">Leave empty to keep current cover photo</small>
+                <span asp-validation-for="CoverPhoto" class="text-danger"></span>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.CurrentProfilePicturePath))
+            {
+                <div class="text-center mb-3">
+                    <img src="@Model.CurrentProfilePicturePath" alt="Current Profile" class="profile-photo-preview" />
+                    <div><small class="text-muted">Current profile photo</small></div>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.CurrentCoverPhotoPath))
+            {
+                <div class="text-center mb-3">
+                    <img src="@Model.CurrentCoverPhotoPath" alt="Current Cover" class="cover-photo-preview" style="max-width: 300px; height: 100px;" />
+                    <div><small class="text-muted">Current cover photo</small></div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Read-only info -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="border-top pt-3">
+                <h6 class="text-muted mb-3">Account Information</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="profile-form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="text" class="form-control" value="@Model.Email" readonly style="background-color: #f8f9fa;" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="profile-form-group">
+                            <label class="form-label">Member Since</label>
+                            <input type="text" class="form-control" value="@Model.JoinedAt.ToString("MMMM dd, yyyy")" readonly style="background-color: #f8f9fa;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer border-0 px-0 pb-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle me-2"></i>Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle me-2"></i>Save Changes
+        </button>
+    </div>
+</form>
+
+<script>
+    // Re-initialize validation for dynamically loaded form
+    $(document).ready(function() {
+        $.validator.unobtrusive.parse('#editProfileForm');
+    });
+</script>
