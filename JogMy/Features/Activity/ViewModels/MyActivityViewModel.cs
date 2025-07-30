@@ -54,6 +54,7 @@ namespace JogMy.Features.Activity.ViewModels
         public string UserId { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public string UserEmail { get; set; } = string.Empty;
+        public string? UserProfilePicturePath { get; set; }
         public string Content { get; set; } = string.Empty;
         public string? ImagePath { get; set; }
         public string? VideoPath { get; set; }
@@ -97,6 +98,7 @@ namespace JogMy.Features.Activity.ViewModels
         public int Id { get; set; }
         public string UserId { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
+        public string? UserProfilePicturePath { get; set; }
         public string Content { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public bool CanEdit { get; set; }

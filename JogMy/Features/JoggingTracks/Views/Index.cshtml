@@ -95,9 +95,12 @@
                                         {
                                             <small class="text-muted d-block mb-2">@track.Description</small>
                                         }
-                                        <button class="btn btn-sm btn-outline-primary" onclick="showTrackOnMap(@track.Id, '@track.Name.Replace("'", "\\'")'); return false;">
-                                            <i class="bi bi-eye me-1"></i>View on Map
-                                        </button>
+                                        <div class="d-flex gap-1 flex-wrap" id="track-buttons-@track.Id">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="showTrackOnMap(@track.Id, '@track.Name.Replace("'", "\\'")'); return false;">
+                                                <i class="bi bi-eye me-1"></i>View on Map
+                                            </button>
+                                            <!-- Google and Waze buttons will be added by JavaScript after coordinate parsing -->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -249,6 +252,29 @@
                                 hasRestrooms: @(track.HasRestrooms.ToString().ToLower()),
                                 isWellLit: @(track.IsWellLit.ToString().ToLower())
                             };
+                            
+                            // Add Google and Waze buttons to the Available Tracks panel
+                            if (coordinates && coordinates.length > 0) {
+                                var firstLat = coordinates[0][0];
+                                var firstLng = coordinates[0][1];
+                                var buttonContainer = document.getElementById('track-buttons-@track.Id');
+                                if (buttonContainer && firstLat && firstLng) {
+                                    var googleBtn = document.createElement('button');
+                                    googleBtn.className = 'btn btn-sm btn-outline-success';
+                                    googleBtn.innerHTML = '<i class="bi bi-geo-alt me-1"></i>Google';
+                                    googleBtn.title = 'Open in Google Maps';
+                                    googleBtn.onclick = function() { openInGoogleMaps(firstLat, firstLng); return false; };
+                                    
+                                    var wazeBtn = document.createElement('button');
+                                    wazeBtn.className = 'btn btn-sm btn-outline-info';
+                                    wazeBtn.innerHTML = '<i class="bi bi-navigation me-1"></i>Waze';
+                                    wazeBtn.title = 'Open in Waze';
+                                    wazeBtn.onclick = function() { openInWaze(firstLat, firstLng); return false; };
+                                    
+                                    buttonContainer.appendChild(googleBtn);
+                                    buttonContainer.appendChild(wazeBtn);
+                                }
+                            }
                             
                             var polyline = L.polyline(coordinates, {
                                 color: '#007bff',
