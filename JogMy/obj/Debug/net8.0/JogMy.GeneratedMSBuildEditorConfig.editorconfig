@@ -34,6 +34,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = RmVhdHVyZXMvQWNjb3VudC9WaWV3cy9fVmlld1N0YXJ0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/raishelmy/Documents/JogMy/JogMy/Features/Activity/Views/Activity.cshtml]
+build_metadata.AdditionalFiles.TargetPath = RmVhdHVyZXMvQWN0aXZpdHkvVmlld3MvQWN0aXZpdHkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/raishelmy/Documents/JogMy/JogMy/Features/Activity/Views/MyActivity.cshtml]
 build_metadata.AdditionalFiles.TargetPath = RmVhdHVyZXMvQWN0aXZpdHkvVmlld3MvTXlBY3Rpdml0eS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

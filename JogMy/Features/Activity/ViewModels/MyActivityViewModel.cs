@@ -19,6 +19,12 @@ namespace JogMy.Features.Activity.ViewModels
         public int TotalComments => Posts.Sum(p => p.Comments.Count);
     }
 
+    public class PublicActivityViewModel
+    {
+        public List<ActivityPostViewModel> Posts { get; set; } = new();
+        public string CurrentUserId { get; set; } = string.Empty;
+    }
+
     public class UserProfileViewModel
     {
         public string UserId { get; set; } = string.Empty;

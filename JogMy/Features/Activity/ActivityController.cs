@@ -32,6 +32,12 @@ namespace JogMy.Features.Activity
             return View(viewModel);
         }
 
+        public async Task<IActionResult> Activity()
+        {
+            var viewModel = await GetPublicActivityViewModel();
+            return View(viewModel);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MyActivity(CreatePostViewModel createPost, bool isPostSubmission = false)
@@ -402,6 +408,57 @@ namespace JogMy.Features.Activity
                     FavoriteRoute = user?.FavoriteRoute,
                     JoinedAt = user?.JoinedAt ?? DateTime.UtcNow
                 },
+                Posts = posts.Select(p => new ActivityPostViewModel
+                {
+                    Id = p.Id,
+                    UserId = p.UserId,
+                    UserName = p.User.UserName ?? p.User.Email ?? "Unknown User",
+                    UserEmail = p.User.Email ?? "",
+                    Content = p.Content,
+                    ImagePath = p.ImagePath,
+                    VideoPath = p.VideoPath,
+                    Privacy = p.Privacy,
+                    CreatedAt = p.CreatedAt,
+                    Distance = p.Distance,
+                    Duration = p.Duration,
+                    Route = p.Route,
+                    ActivityDate = p.ActivityDate,
+                    LikesCount = p.Likes.Count,
+                    IsLikedByCurrentUser = p.Likes.Any(l => l.UserId == userId),
+                    CanEdit = p.UserId == userId,
+                    CanDelete = p.UserId == userId,
+                    Comments = p.Comments.Select(c => new ActivityCommentViewModel
+                    {
+                        Id = c.Id,
+                        UserId = c.UserId,
+                        UserName = c.User.UserName ?? c.User.Email ?? "Unknown User",
+                        Content = c.Content,
+                        CreatedAt = c.CreatedAt,
+                        CanEdit = c.UserId == userId,
+                        CanDelete = c.UserId == userId
+                    }).ToList()
+                }).ToList()
+            };
+        }
+
+        private async Task<PublicActivityViewModel> GetPublicActivityViewModel()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+            // Get latest 20 public posts from all users
+            var posts = await _context.ActivityPosts
+                .Include(p => p.User)
+                .Include(p => p.Comments.OrderBy(c => c.CreatedAt))
+                    .ThenInclude(c => c.User)
+                .Include(p => p.Likes)
+                .Where(p => p.Privacy == PostPrivacy.Public)
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(20)
+                .ToListAsync();
+
+            return new PublicActivityViewModel
+            {
+                CurrentUserId = userId,
                 Posts = posts.Select(p => new ActivityPostViewModel
                 {
                     Id = p.Id,

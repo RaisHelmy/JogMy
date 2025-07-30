@@ -1,0 +1,424 @@
+@model JogMy.Features.Activity.ViewModels.PublicActivityViewModel
+@{
+    ViewData["Title"] = "Activity Feed";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <!-- Page Header -->
+            <div class="activity-header mb-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="mb-1">
+                            <i class="bi bi-newspaper me-2 text-primary"></i>Activity Feed
+                        </h2>
+                        <p class="text-muted mb-0">Latest public activities from the community</p>
+                    </div>
+                    <div class="text-end">
+                        <small class="text-muted">
+                            <i class="bi bi-people me-1"></i>
+                            Showing latest 20 public posts
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Posts -->
+            <div class="activity-posts">
+                @if (Model.Posts.Any())
+                {
+                    @foreach (var post in Model.Posts)
+                    {
+                        <div class="activity-post mb-4" id="post-@post.Id">
+                            <div class="card border-0 shadow-sm">
+                                <!-- Post Header -->
+                                <div class="card-header bg-white border-0 px-4 pt-4 pb-2">
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-3">
+                                            <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border-radius: 50%;">
+                                                <strong>@post.UserName.Substring(0, Math.Min(2, post.UserName.Length)).ToUpper()</strong>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-0 fw-bold">@post.UserName</h6>
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock me-1"></i>@post.TimeAgo
+                                            </small>
+                                        </div>
+                                        <div class="post-privacy">
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-globe2 me-1"></i>Public
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Post Content -->
+                                <div class="card-body px-4 py-3">
+                                    @if (!string.IsNullOrEmpty(post.Content))
+                                    {
+                                        <p class="post-content mb-3">@post.Content</p>
+                                    }
+
+                                    <!-- Activity Details -->
+                                    @if (post.Distance.HasValue || post.Duration.HasValue || !string.IsNullOrEmpty(post.Route) || post.ActivityDate.HasValue)
+                                    {
+                                        <div class="activity-details mb-3">
+                                            <div class="row g-3">
+                                                @if (post.Distance.HasValue)
+                                                {
+                                                    <div class="col-6 col-md-3">
+                                                        <div class="detail-item text-center p-2 bg-light rounded">
+                                                            <i class="bi bi-speedometer2 text-info d-block mb-1"></i>
+                                                            <small class="text-muted d-block">Distance</small>
+                                                            <strong class="text-primary">@post.FormattedDistance</strong>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (post.Duration.HasValue)
+                                                {
+                                                    <div class="col-6 col-md-3">
+                                                        <div class="detail-item text-center p-2 bg-light rounded">
+                                                            <i class="bi bi-clock text-warning d-block mb-1"></i>
+                                                            <small class="text-muted d-block">Duration</small>
+                                                            <strong class="text-warning">@post.FormattedDuration</strong>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (!string.IsNullOrEmpty(post.Route))
+                                                {
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="detail-item text-center p-2 bg-light rounded">
+                                                            <i class="bi bi-geo-alt text-success d-block mb-1"></i>
+                                                            <small class="text-muted d-block">Route</small>
+                                                            <strong class="text-success">@post.Route</strong>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (post.ActivityDate.HasValue)
+                                                {
+                                                    <div class="col-12">
+                                                        <div class="detail-item text-center p-2 bg-light rounded">
+                                                            <i class="bi bi-calendar-event text-danger d-block mb-1"></i>
+                                                            <small class="text-muted d-block">Activity Date</small>
+                                                            <strong class="text-danger">@post.ActivityDate.Value.ToString("MMM dd, yyyy")</strong>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <!-- Media -->
+                                    @if (!string.IsNullOrEmpty(post.ImagePath))
+                                    {
+                                        <div class="post-media mb-3">
+                                            <img src="@post.ImagePath" alt="Activity Photo" class="img-fluid rounded" style="max-height: 400px; width: 100%; object-fit: cover;" />
+                                        </div>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(post.VideoPath))
+                                    {
+                                        <div class="post-media mb-3">
+                                            <video controls class="w-100 rounded" style="max-height: 400px;">
+                                                <source src="@post.VideoPath" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Post Actions -->
+                                <div class="post-actions">
+                                    <div class="d-flex gap-2 px-4 py-3 border-top bg-light">
+                                        <button class="btn btn-outline-primary btn-sm like-btn flex-fill d-flex align-items-center justify-content-center @(post.IsLikedByCurrentUser ? "active" : "")" 
+                                                onclick="toggleLike(@post.Id)" data-post-id="@post.Id">
+                                            <i class="bi @(post.IsLikedByCurrentUser ? "bi-heart-fill" : "bi-heart") me-2"></i>
+                                            <span class="like-count">@post.LikesCount</span>
+                                            <span class="ms-1">@(post.LikesCount == 1 ? "Like" : "Likes")</span>
+                                        </button>
+                                        <button class="btn btn-outline-secondary btn-sm flex-fill d-flex align-items-center justify-content-center" 
+                                                onclick="toggleComments(@post.Id)">
+                                            <i class="bi bi-chat me-2"></i>
+                                            <span>@post.Comments.Count</span>
+                                            <span class="ms-1">@(post.Comments.Count == 1 ? "Comment" : "Comments")</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Comments Section -->
+                                <div class="comments-section" id="comments-@post.Id" style="display: none;">
+                                    <div class="px-4 py-3 border-top bg-white">
+                                        <!-- Existing Comments -->
+                                        @foreach (var comment in post.Comments)
+                                        {
+                                            <div class="comment mb-3" id="comment-@comment.Id">
+                                                <div class="d-flex">
+                                                    <div class="comment-avatar me-2">
+                                                        <div class="avatar-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border-radius: 50%; font-size: 12px;">
+                                                            <strong>@comment.UserName.Substring(0, Math.Min(2, comment.UserName.Length)).ToUpper()</strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <div class="comment-bubble bg-light p-2 rounded">
+                                                            <strong class="comment-author">@comment.UserName</strong>
+                                                            <p class="comment-text mb-0">@comment.Content</p>
+                                                        </div>
+                                                        <small class="text-muted ms-2">@comment.TimeAgo</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        <!-- Add Comment Form -->
+                                        <div class="add-comment mt-3">
+                                            <form class="comment-form" onsubmit="addComment(event, @post.Id)">
+                                                <div class="d-flex gap-2">
+                                                    <div class="comment-avatar me-2">
+                                                        <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border-radius: 50%; font-size: 12px;">
+                                                            <strong>You</strong>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control comment-input" placeholder="Write a comment..." required>
+                                                            <button type="submit" class="btn btn-primary">
+                                                                <i class="bi bi-send"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-newspaper display-1 text-muted"></i>
+                        <h4 class="mt-3 text-muted">No Public Activities Yet</h4>
+                        <p class="text-muted">Be the first to share your jogging activity with the community!</p>
+                        <a href="@Url.Action("MyActivity", "Activity")" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-2"></i>Share Your Activity
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.activity-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.activity-post {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.activity-post:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+.activity-post .card {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.user-avatar, .comment-avatar {
+    flex-shrink: 0;
+}
+
+.avatar-circle {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.post-content {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #2d3748;
+}
+
+.activity-details .detail-item {
+    transition: all 0.2s ease;
+}
+
+.activity-details .detail-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.post-actions .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.like-btn.active {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.comment-bubble {
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+}
+
+.comment-form .form-control {
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.comment-form .btn {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@@media (max-width: 768px) {
+    .activity-details .row > div {
+        margin-bottom: 0.5rem;
+    }
+    
+    .post-actions .btn {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+    
+    .activity-header h2 {
+        font-size: 1.5rem;
+    }
+}
+</style>
+
+<script>
+function toggleLike(postId) {
+    fetch('@Url.Action("ToggleLike", "Activity")', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+        },
+        body: JSON.stringify(postId)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const likeBtn = document.querySelector(`[data-post-id="${postId}"]`);
+            const likeCount = likeBtn.querySelector('.like-count');
+            const heartIcon = likeBtn.querySelector('i');
+            const likeText = likeBtn.querySelector('span:last-child');
+            
+            likeCount.textContent = data.likesCount;
+            likeText.textContent = data.likesCount === 1 ? 'Like' : 'Likes';
+            
+            if (data.isLiked) {
+                likeBtn.classList.add('active');
+                heartIcon.className = 'bi bi-heart-fill me-2';
+            } else {
+                likeBtn.classList.remove('active');
+                heartIcon.className = 'bi bi-heart me-2';
+            }
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function toggleComments(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    if (commentsSection.style.display === 'none' || commentsSection.style.display === '') {
+        commentsSection.style.display = 'block';
+        commentsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+        commentsSection.style.display = 'none';
+    }
+}
+
+function addComment(event, postId) {
+    event.preventDefault();
+    const form = event.target;
+    const input = form.querySelector('.comment-input');
+    const content = input.value.trim();
+    
+    if (!content) return;
+    
+    fetch('@Url.Action("AddComment", "Activity")', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `postId=${postId}&content=${encodeURIComponent(content)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Add new comment to the comments section
+            const commentsSection = document.getElementById(`comments-${postId}`);
+            const existingComments = commentsSection.querySelector('.px-4.py-3.border-top.bg-white');
+            const addCommentForm = existingComments.querySelector('.add-comment');
+            
+            const newCommentHtml = `
+                <div class="comment mb-3" id="comment-${data.comment.id}">
+                    <div class="d-flex">
+                        <div class="comment-avatar me-2">
+                            <div class="avatar-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border-radius: 50%; font-size: 12px;">
+                                <strong>${data.comment.userName.substring(0, Math.min(2, data.comment.userName.length)).toUpperCase()}</strong>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="comment-bubble bg-light p-2 rounded">
+                                <strong class="comment-author">${data.comment.userName}</strong>
+                                <p class="comment-text mb-0">${data.comment.content}</p>
+                            </div>
+                            <small class="text-muted ms-2">${data.comment.timeAgo}</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            addCommentForm.insertAdjacentHTML('beforebegin', newCommentHtml);
+            
+            // Update comment count
+            const commentBtn = document.querySelector(`button[onclick="toggleComments(${postId})"]`);
+            const commentCount = commentBtn.querySelector('span:first-of-type');
+            const commentText = commentBtn.querySelector('span:last-of-type');
+            const newCount = parseInt(commentCount.textContent) + 1;
+            commentCount.textContent = newCount;
+            commentText.textContent = newCount === 1 ? 'Comment' : 'Comments';
+            
+            // Clear input
+            input.value = '';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
