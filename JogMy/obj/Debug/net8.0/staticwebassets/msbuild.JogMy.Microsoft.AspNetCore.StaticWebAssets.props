@@ -992,6 +992,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\covers\f627df7f-86ec-4f4f-a60d-65703b0f1236_524875880_24590256563931514_131529319394546942_n.jpg))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\7b6a4001-ef8d-4587-b69c-70f8b7cb0c9b_524875880_24590256563931514_131529319394546942_n.jpg))">
+      <SourceType>Package</SourceType>
+      <SourceId>JogMy</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/JogMy</BasePath>
+      <RelativePath>uploads/images/7b6a4001-ef8d-4587-b69c-70f8b7cb0c9b_524875880_24590256563931514_131529319394546942_n.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\7b6a4001-ef8d-4587-b69c-70f8b7cb0c9b_524875880_24590256563931514_131529319394546942_n.jpg))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\profiles\8b6de4d9-184b-4d14-9536-2aac70bc233f_ChatGPT_Image_Jul_24,_2025,_11_27_01_AM.png))">
       <SourceType>Package</SourceType>
       <SourceId>JogMy</SourceId>

@@ -73,6 +73,12 @@
                 <button class="btn btn-outline-primary btn-sm track-action-btn" onclick="centerOnTrack('{trackId}')">
                     <i class="bi bi-crosshair me-1"></i>Center
                 </button>
+                <button class="btn btn-outline-success btn-sm track-action-btn ms-1" onclick="openInGoogleMaps('{firstLat}', '{firstLng}')" title="Open in Google Maps">
+                    <i class="bi bi-geo-alt me-1"></i>Google
+                </button>
+                <button class="btn btn-outline-info btn-sm track-action-btn ms-1" onclick="openInWaze('{firstLat}', '{firstLng}')" title="Open in Waze">
+                    <i class="bi bi-navigation me-1"></i>Waze
+                </button>
             </div>
         </div>
     </div>
@@ -200,6 +206,17 @@
 .track-action-btn:hover {
     background-color: #0d6efd;
     color: white;
+}
+
+.btn-outline-success.track-action-btn:hover {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.btn-outline-info.track-action-btn:hover {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: #000;
 }
 
 /* Leaflet popup customization */

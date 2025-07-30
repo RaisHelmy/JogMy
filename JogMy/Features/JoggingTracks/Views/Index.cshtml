@@ -322,6 +322,14 @@
             var hasDescription = trackData.description && trackData.description.trim() !== '';
             var surfaceType = trackData.surfaceType || 'Suitable for jogging, running, and walking';
             
+            // Extract first coordinate for navigation apps
+            var firstLat = '';
+            var firstLng = '';
+            if (trackData.coordinates && trackData.coordinates.length > 0) {
+                firstLat = trackData.coordinates[0][0];
+                firstLng = trackData.coordinates[0][1];
+            }
+            
             // Build amenities list
             var amenities = [];
             if (trackData.hasParking) amenities.push('<i class="bi bi-car-front me-1"></i>Parking');
@@ -435,15 +443,36 @@
                                 Public track
                             </small>
                             <div class="track-actions">
-                                <small class="text-primary">
-                                    <i class="bi bi-eye me-1"></i>
-                                    Track highlighted
-                                </small>
+                                ${firstLat && firstLng ? `
+                                    <button class="btn btn-outline-success btn-sm track-action-btn me-1" onclick="openInGoogleMaps('${firstLat}', '${firstLng}')" title="Open in Google Maps">
+                                        <i class="bi bi-geo-alt me-1"></i>Google
+                                    </button>
+                                    <button class="btn btn-outline-info btn-sm track-action-btn" onclick="openInWaze('${firstLat}', '${firstLng}')" title="Open in Waze">
+                                        <i class="bi bi-navigation me-1"></i>Waze
+                                    </button>
+                                ` : `
+                                    <small class="text-primary">
+                                        <i class="bi bi-eye me-1"></i>
+                                        Track highlighted
+                                    </small>
+                                `}
                             </div>
                         </div>
                     </div>
                 </div>
             `;
+        }
+        
+        // Function to open location in Google Maps
+        function openInGoogleMaps(lat, lng) {
+            var url = 'https://www.google.com/maps?q=' + lat + ',' + lng + '&ll=' + lat + ',' + lng + '&z=15';
+            window.open(url, '_blank');
+        }
+        
+        // Function to open location in Waze
+        function openInWaze(lat, lng) {
+            var url = 'https://waze.com/ul?ll=' + lat + ',' + lng + '&navigate=yes';
+            window.open(url, '_blank');
         }
         
         function showTrackOnMap(trackId, trackName) {
