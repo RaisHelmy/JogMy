@@ -321,6 +321,240 @@
             color: #1565c0 !important;
             font-weight: 600;
         }
+
+        /* iOS-style Picker Styles */
+        .ios-picker-button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ios-picker-button:hover {
+            border-color: #1877f2;
+            box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.1);
+        }
+
+        .ios-picker-button:focus {
+            outline: none;
+            border-color: #1877f2;
+            box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.2);
+        }
+
+        .ios-picker-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1050;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .ios-picker-container > div:first-child {
+            background: white;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(0);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .ios-picker-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e5e7;
+            background: #f8f9fa;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .ios-picker-cancel, .ios-picker-done {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 400;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .ios-picker-cancel {
+            color: #8e8e93;
+        }
+
+        .ios-picker-cancel:hover {
+            background: #e5e5e7;
+        }
+
+        .ios-picker-done {
+            color: #007aff;
+            font-weight: 600;
+        }
+
+        .ios-picker-done:hover {
+            background: rgba(0, 122, 255, 0.1);
+        }
+
+        .ios-picker-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #1c1c1e;
+        }
+
+        .ios-picker-wheels {
+            display: flex;
+            height: 220px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ios-picker-wheels::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 40px;
+            transform: translateY(-50%);
+            background: rgba(0, 122, 255, 0.05);
+            border-top: 1px solid rgba(0, 122, 255, 0.2);
+            border-bottom: 1px solid rgba(0, 122, 255, 0.2);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .ios-picker-wheel {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ios-picker-label {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #1c1c1e;
+            font-weight: 400;
+            z-index: 15;
+            pointer-events: none;
+        }
+
+        .ios-picker-options {
+            padding: 90px 0;
+            transform: translateY(0px);
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: grab;
+            position: relative;
+        }
+
+        .ios-picker-options.dragging {
+            transition: none;
+            cursor: grabbing;
+        }
+
+        .ios-picker-option {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #1c1c1e;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            position: relative;
+        }
+
+        .ios-picker-option:hover {
+            background: rgba(0, 122, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .ios-picker-option.selected {
+            color: #007aff;
+            font-weight: 600;
+            transform: scale(1.05);
+        }
+
+        .ios-picker-option:not(.selected) {
+            opacity: 0.4;
+        }
+
+        .ios-picker-option.nearby {
+            opacity: 0.7;
+            transform: scale(1.02);
+        }
+
+        /* Scroll indicators for desktop */
+        .ios-picker-wheel::after {
+            content: '⌃⌄';
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #8e8e93;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .ios-picker-wheel:hover::after {
+            opacity: 1;
+        }
+
+        @@media (hover: hover) and (pointer: fine) {
+            .ios-picker-wheel::after {
+                opacity: 0.5;
+            }
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile responsive */
+        @@media (max-width: 768px) {
+            .ios-picker-container {
+                padding: 0;
+            }
+            
+            .ios-picker-header {
+                padding: 12px 16px;
+            }
+            
+            .ios-picker-wheels {
+                height: 200px;
+            }
+            
+            .ios-picker-option {
+                font-size: 18px;
+            }
+        }
     </style>
 }
 
@@ -413,8 +647,29 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label asp-for="CreatePost.DurationInput" class="form-label">Duration (HH:MM)</label>
-                                            <input asp-for="CreatePost.DurationInput" type="time" class="form-control" />
+                                            <label class="form-label">Duration</label>
+                                            <button type="button" class="form-control ios-picker-button" id="durationPickerButton" onclick="toggleDurationPicker()">
+                                                <span id="selectedDuration">Select Duration</span>
+                                                <i class="bi bi-chevron-down ms-auto"></i>
+                                            </button>
+                                            <div class="ios-picker-container" id="durationPickerContainer" style="display: none;">
+                                                <div class="ios-picker-header">
+                                                    <button type="button" class="ios-picker-cancel" onclick="cancelDurationPicker()">Cancel</button>
+                                                    <span class="ios-picker-title">Select Duration</span>
+                                                    <button type="button" class="ios-picker-done" onclick="confirmDurationPicker()">Done</button>
+                                                </div>
+                                                <div class="ios-picker-wheels">
+                                                    <div class="ios-picker-wheel" id="hoursWheel">
+                                                        <div class="ios-picker-label">hours</div>
+                                                        <div class="ios-picker-options" id="hoursOptions"></div>
+                                                    </div>
+                                                    <div class="ios-picker-wheel" id="minutesWheel">
+                                                        <div class="ios-picker-label">min</div>
+                                                        <div class="ios-picker-options" id="minutesOptions"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <input asp-for="CreatePost.DurationInput" type="hidden" id="hiddenDuration" />
                                         </div>
                                     </div>
                                 </div>
@@ -437,8 +692,30 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label asp-for="CreatePost.ActivityDate" class="form-label">Activity Date</label>
-                                            <input asp-for="CreatePost.ActivityDate" type="datetime-local" class="form-control" />
+                                            <label class="form-label">Activity Date</label>
+                                            <button type="button" class="form-control ios-picker-button" id="datePickerButton" onclick="toggleDatePicker()">
+                                                <span id="selectedDate">Select Date</span>
+                                                <i class="bi bi-chevron-down ms-auto"></i>
+                                            </button>
+                                            <div class="ios-picker-container" id="datePickerContainer" style="display: none;">
+                                                <div class="ios-picker-header">
+                                                    <button type="button" class="ios-picker-cancel" onclick="cancelDatePicker()">Cancel</button>
+                                                    <span class="ios-picker-title">Select Date</span>
+                                                    <button type="button" class="ios-picker-done" onclick="confirmDatePicker()">Done</button>
+                                                </div>
+                                                <div class="ios-picker-wheels">
+                                                    <div class="ios-picker-wheel" id="monthWheel">
+                                                        <div class="ios-picker-options" id="monthOptions"></div>
+                                                    </div>
+                                                    <div class="ios-picker-wheel" id="dayWheel">
+                                                        <div class="ios-picker-options" id="dayOptions"></div>
+                                                    </div>
+                                                    <div class="ios-picker-wheel" id="yearWheel">
+                                                        <div class="ios-picker-options" id="yearOptions"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <input asp-for="CreatePost.ActivityDate" type="hidden" id="hiddenActivityDate" />
                                         </div>
                                     </div>
                                 </div>
@@ -713,6 +990,399 @@
             }
         }
 
+        // iOS-style Date Picker Functions
+        let selectedDateValues = { month: new Date().getMonth(), day: new Date().getDate(), year: new Date().getFullYear() };
+        let tempDateValues = { ...selectedDateValues };
+
+        function toggleDatePicker() {
+            const container = document.getElementById('datePickerContainer');
+            if (container.style.display === 'none') {
+                initializeDatePicker();
+                container.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            } else {
+                container.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        function initializeDatePicker() {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            // Initialize month wheel
+            const monthOptions = document.getElementById('monthOptions');
+            monthOptions.innerHTML = '';
+            months.forEach((month, index) => {
+                const option = document.createElement('div');
+                option.className = 'ios-picker-option';
+                option.textContent = month;
+                if (index === tempDateValues.month) option.classList.add('selected');
+                monthOptions.appendChild(option);
+            });
+
+            // Initialize day wheel
+            const dayOptions = document.getElementById('dayOptions');
+            dayOptions.innerHTML = '';
+            const daysInMonth = new Date(tempDateValues.year, tempDateValues.month + 1, 0).getDate();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const option = document.createElement('div');
+                option.className = 'ios-picker-option';
+                option.textContent = day;
+                if (day === tempDateValues.day) option.classList.add('selected');
+                dayOptions.appendChild(option);
+            }
+
+            // Initialize year wheel
+            const yearOptions = document.getElementById('yearOptions');
+            yearOptions.innerHTML = '';
+            const currentYear = new Date().getFullYear();
+            for (let year = currentYear - 5; year <= currentYear + 1; year++) {
+                const option = document.createElement('div');
+                option.className = 'ios-picker-option';
+                option.textContent = year;
+                if (year === tempDateValues.year) option.classList.add('selected');
+                yearOptions.appendChild(option);
+            }
+
+            // Center selected options and setup interactions
+            centerSelectedOptions(['monthOptions', 'dayOptions', 'yearOptions']);
+            setupWheelInteractions();
+        }
+
+
+        function updateDaysInMonth() {
+            const dayOptions = document.getElementById('dayOptions');
+            const daysInMonth = new Date(tempDateValues.year, tempDateValues.month + 1, 0).getDate();
+            
+            // Adjust day if it's beyond the new month's limit
+            if (tempDateValues.day > daysInMonth) {
+                tempDateValues.day = daysInMonth;
+            }
+            
+            dayOptions.innerHTML = '';
+            for (let day = 1; day <= daysInMonth; day++) {
+                const option = document.createElement('div');
+                option.className = 'ios-picker-option';
+                option.textContent = day;
+                option.onclick = () => selectDateOption('day', day);
+                if (day === tempDateValues.day) option.classList.add('selected');
+                dayOptions.appendChild(option);
+            }
+            
+            centerSelectedOptions(['dayOptions']);
+        }
+
+        // Enhanced picker interaction functions
+        const pickerState = {
+            dragging: false,
+            startY: 0,
+            startTransform: 0,
+            currentWheel: null,
+            momentum: 0,
+            lastMoveTime: 0
+        };
+
+        function centerSelectedOptions(containerIds) {
+            containerIds.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                const selected = container.querySelector('.selected');
+                if (selected) {
+                    const index = Array.from(container.children).indexOf(selected);
+                    const offset = -index * 40;
+                    container.style.transform = `translateY(${offset}px)`;
+                    updateNearbyOptions(container, index);
+                }
+            });
+        }
+
+        function updateNearbyOptions(container, selectedIndex) {
+            container.querySelectorAll('.ios-picker-option').forEach((option, index) => {
+                option.classList.remove('selected', 'nearby');
+                if (index === selectedIndex) {
+                    option.classList.add('selected');
+                } else if (Math.abs(index - selectedIndex) === 1) {
+                    option.classList.add('nearby');
+                }
+            });
+        }
+
+        function setupWheelInteractions() {
+            // Setup for all picker wheels
+            ['monthOptions', 'dayOptions', 'yearOptions', 'hoursOptions', 'minutesOptions'].forEach(id => {
+                const container = document.getElementById(id);
+                if (!container) return;
+
+                // Mouse wheel support
+                container.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    handleWheelScroll(container, e.deltaY);
+                });
+
+                // Mouse drag support
+                container.addEventListener('mousedown', (e) => {
+                    startDrag(container, e.clientY);
+                });
+
+                // Touch support
+                container.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    startDrag(container, e.touches[0].clientY);
+                }, { passive: false });
+
+                // Keyboard support
+                container.addEventListener('keydown', (e) => {
+                    handleKeyboardNav(container, e);
+                });
+
+                container.setAttribute('tabindex', '0');
+            });
+
+            // Global mouse/touch move and end events
+            document.addEventListener('mousemove', handleDragMove);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchmove', (e) => {
+                if (pickerState.dragging) {
+                    e.preventDefault();
+                    handleDragMove(e.touches[0]);
+                }
+            }, { passive: false });
+            document.addEventListener('touchend', endDrag);
+        }
+
+        function startDrag(container, clientY) {
+            pickerState.dragging = true;
+            pickerState.startY = clientY;
+            pickerState.currentWheel = container;
+            pickerState.lastMoveTime = Date.now();
+            
+            const transform = container.style.transform.match(/translateY\((-?\d+(?:\.\d+)?)px\)/);
+            pickerState.startTransform = transform ? parseFloat(transform[1]) : 0;
+            
+            container.classList.add('dragging');
+            document.body.style.cursor = 'grabbing';
+        }
+
+        function handleDragMove(e) {
+            if (!pickerState.dragging || !pickerState.currentWheel) return;
+
+            const clientY = e.clientY || e.clientY;
+            const deltaY = clientY - pickerState.startY;
+            const newTransform = pickerState.startTransform + deltaY;
+            
+            pickerState.currentWheel.style.transform = `translateY(${newTransform}px)`;
+            
+            // Calculate momentum for smooth scrolling
+            const now = Date.now();
+            pickerState.momentum = (clientY - pickerState.startY) / (now - pickerState.lastMoveTime);
+            pickerState.lastMoveTime = now;
+            
+            updateSelectionFromTransform(pickerState.currentWheel, newTransform);
+        }
+
+        function endDrag() {
+            if (!pickerState.dragging || !pickerState.currentWheel) return;
+
+            const container = pickerState.currentWheel;
+            container.classList.remove('dragging');
+            document.body.style.cursor = '';
+
+            // Apply momentum if there was significant movement
+            if (Math.abs(pickerState.momentum) > 0.5) {
+                const currentTransform = getCurrentTransform(container);
+                const momentumDistance = pickerState.momentum * 100; // Adjust multiplier as needed
+                const finalTransform = currentTransform + momentumDistance;
+                
+                container.style.transform = `translateY(${finalTransform}px)`;
+                setTimeout(() => {
+                    snapToNearestOption(container);
+                }, 200);
+            } else {
+                snapToNearestOption(container);
+            }
+
+            pickerState.dragging = false;
+            pickerState.currentWheel = null;
+            pickerState.momentum = 0;
+        }
+
+        function handleWheelScroll(container, deltaY) {
+            const currentTransform = getCurrentTransform(container);
+            const wheelSensitivity = 40; // One option per wheel notch
+            const newTransform = currentTransform - (deltaY > 0 ? wheelSensitivity : -wheelSensitivity);
+            
+            container.style.transform = `translateY(${newTransform}px)`;
+            updateSelectionFromTransform(container, newTransform);
+            
+            // Debounced snap to nearest option
+            clearTimeout(container.snapTimeout);
+            container.snapTimeout = setTimeout(() => {
+                snapToNearestOption(container);
+            }, 150);
+        }
+
+        function handleKeyboardNav(container, e) {
+            let direction = 0;
+            if (e.key === 'ArrowUp') direction = -1;
+            else if (e.key === 'ArrowDown') direction = 1;
+            else return;
+
+            e.preventDefault();
+            
+            const currentTransform = getCurrentTransform(container);
+            const newTransform = currentTransform + (direction * 40);
+            
+            container.style.transform = `translateY(${newTransform}px)`;
+            updateSelectionFromTransform(container, newTransform);
+            snapToNearestOption(container);
+        }
+
+        function getCurrentTransform(container) {
+            const transform = container.style.transform.match(/translateY\((-?\d+(?:\.\d+)?)px\)/);
+            return transform ? parseFloat(transform[1]) : 0;
+        }
+
+        function snapToNearestOption(container) {
+            const currentTransform = getCurrentTransform(container);
+            const optionHeight = 40;
+            const nearestIndex = Math.round(-currentTransform / optionHeight);
+            const maxIndex = container.children.length - 1;
+            const clampedIndex = Math.max(0, Math.min(nearestIndex, maxIndex));
+            const snapTransform = -clampedIndex * optionHeight;
+            
+            container.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            container.style.transform = `translateY(${snapTransform}px)`;
+            
+            setTimeout(() => {
+                container.style.transition = '';
+            }, 300);
+            
+            updateSelectionFromTransform(container, snapTransform);
+        }
+
+        function updateSelectionFromTransform(container, transform) {
+            const optionHeight = 40;
+            const selectedIndex = Math.round(-transform / optionHeight);
+            const clampedIndex = Math.max(0, Math.min(selectedIndex, container.children.length - 1));
+            
+            // Update visual selection
+            updateNearbyOptions(container, clampedIndex);
+            
+            // Update the actual values based on container type
+            const containerId = container.id;
+            if (containerId === 'monthOptions') {
+                tempDateValues.month = clampedIndex;
+                if (document.getElementById('datePickerContainer').style.display !== 'none') {
+                    updateDaysInMonth();
+                }
+            } else if (containerId === 'dayOptions') {
+                tempDateValues.day = clampedIndex + 1;
+            } else if (containerId === 'yearOptions') {
+                const yearOption = container.children[clampedIndex];
+                if (yearOption) {
+                    tempDateValues.year = parseInt(yearOption.textContent);
+                    if (document.getElementById('datePickerContainer').style.display !== 'none') {
+                        updateDaysInMonth();
+                    }
+                }
+            } else if (containerId === 'hoursOptions') {
+                tempDurationValues.hours = clampedIndex;
+            } else if (containerId === 'minutesOptions') {
+                tempDurationValues.minutes = clampedIndex * 5;
+            }
+        }
+
+        function confirmDatePicker() {
+            selectedDateValues = { ...tempDateValues };
+            const date = new Date(selectedDateValues.year, selectedDateValues.month, selectedDateValues.day);
+            const formattedDate = date.toLocaleDateString('en-US', { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+            
+            document.getElementById('selectedDate').textContent = formattedDate;
+            document.getElementById('hiddenActivityDate').value = date.toISOString();
+            toggleDatePicker();
+        }
+
+        function cancelDatePicker() {
+            tempDateValues = { ...selectedDateValues };
+            toggleDatePicker();
+        }
+
+        // iOS-style Duration Picker Functions
+        let selectedDurationValues = { hours: 0, minutes: 0 };
+        let tempDurationValues = { ...selectedDurationValues };
+
+        function toggleDurationPicker() {
+            const container = document.getElementById('durationPickerContainer');
+            if (container.style.display === 'none') {
+                initializeDurationPicker();
+                container.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            } else {
+                container.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        function initializeDurationPicker() {
+            // Initialize hours wheel (0-23)
+            const hoursOptions = document.getElementById('hoursOptions');
+            hoursOptions.innerHTML = '';
+            for (let hour = 0; hour <= 23; hour++) {
+                const option = document.createElement('div');
+                option.className = 'ios-picker-option';
+                option.textContent = hour;
+                if (hour === tempDurationValues.hours) option.classList.add('selected');
+                hoursOptions.appendChild(option);
+            }
+
+            // Initialize minutes wheel (0, 5, 10, 15, ..., 55)
+            const minutesOptions = document.getElementById('minutesOptions');
+            minutesOptions.innerHTML = '';
+            for (let minute = 0; minute < 60; minute += 5) {
+                const option = document.createElement('div');
+                option.className = 'ios-picker-option';
+                option.textContent = minute.toString().padStart(2, '0');
+                if (minute === tempDurationValues.minutes) option.classList.add('selected');
+                minutesOptions.appendChild(option);
+            }
+
+            // Center selected options and setup interactions
+            centerSelectedOptions(['hoursOptions', 'minutesOptions']);
+            setupWheelInteractions();
+        }
+
+
+        function confirmDurationPicker() {
+            selectedDurationValues = { ...tempDurationValues };
+            const hours = selectedDurationValues.hours;
+            const minutes = selectedDurationValues.minutes;
+            
+            let formattedDuration = '';
+            if (hours > 0) {
+                formattedDuration += `${hours}h `;
+            }
+            if (minutes > 0) {
+                formattedDuration += `${minutes}m`;
+            }
+            if (formattedDuration === '') {
+                formattedDuration = '0m';
+            }
+            
+            document.getElementById('selectedDuration').textContent = formattedDuration.trim();
+            document.getElementById('hiddenDuration').value = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            toggleDurationPicker();
+        }
+
+        function cancelDurationPicker() {
+            tempDurationValues = { ...selectedDurationValues };
+            toggleDurationPicker();
+        }
+
         function previewFile(input, type) {
             const preview = document.getElementById('filePreview');
             if (input.files && input.files[0]) {
@@ -941,6 +1611,12 @@
                 // Reset privacy dropdown
                 const privacySelect = document.querySelector('select[name="CreatePost.Privacy"]');
                 if (privacySelect) privacySelect.value = '0';
+                
+                // Reset iOS pickers
+                selectedDateValues = { month: new Date().getMonth(), day: new Date().getDate(), year: new Date().getFullYear() };
+                selectedDurationValues = { hours: 0, minutes: 0 };
+                document.getElementById('selectedDate').textContent = 'Select Date';
+                document.getElementById('selectedDuration').textContent = 'Select Duration';
                 </text>
             }
             
