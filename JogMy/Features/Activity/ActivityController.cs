@@ -83,7 +83,7 @@ namespace JogMy.Features.Activity
                 createPost.Distance = null; // Reset invalid distance to null
             }
 
-            // Handle file uploads
+            // Handle file uploads (backward compatibility)
             if (createPost.Image != null)
             {
                 imagePath = await SaveFileAsync(createPost.Image, "images");
@@ -92,6 +92,26 @@ namespace JogMy.Features.Activity
             if (createPost.Video != null)
             {
                 videoPath = await SaveFileAsync(createPost.Video, "videos");
+            }
+
+            // Handle multiple media files
+            var mediaFiles = new List<ActivityMedia>();
+            if (createPost.MediaFiles != null && createPost.MediaFiles.Any())
+            {
+                for (int i = 0; i < createPost.MediaFiles.Count; i++)
+                {
+                    var file = createPost.MediaFiles[i];
+                    var isVideo = file.ContentType.StartsWith("video/");
+                    var folder = isVideo ? "videos" : "images";
+                    var filePath = await SaveFileAsync(file, folder);
+                    
+                    mediaFiles.Add(new ActivityMedia
+                    {
+                        FilePath = filePath,
+                        MediaType = isVideo ? MediaType.Video : MediaType.Image,
+                        OrderIndex = i
+                    });
+                }
             }
 
             // Parse duration
@@ -132,6 +152,17 @@ namespace JogMy.Features.Activity
 
             _context.ActivityPosts.Add(post);
             await _context.SaveChangesAsync();
+
+            // Add media files to the post
+            if (mediaFiles.Any())
+            {
+                foreach (var media in mediaFiles)
+                {
+                    media.ActivityPostId = post.Id;
+                    _context.ActivityMedia.Add(media);
+                }
+                await _context.SaveChangesAsync();
+            }
 
             TempData["Success"] = "Your activity has been posted successfully!";
             TempData["NewPostId"] = post.Id; // Pass the new post ID to highlight it
@@ -382,6 +413,7 @@ namespace JogMy.Features.Activity
                 .Include(p => p.Comments.OrderBy(c => c.CreatedAt))
                     .ThenInclude(c => c.User)
                 .Include(p => p.Likes)
+                .Include(p => p.MediaFiles.OrderBy(m => m.OrderIndex))
                 .Where(p => p.UserId == userId)
                 .OrderByDescending(p => p.CreatedAt)
                 .Take(5)
@@ -427,6 +459,13 @@ namespace JogMy.Features.Activity
                     IsLikedByCurrentUser = p.Likes.Any(l => l.UserId == userId),
                     CanEdit = p.UserId == userId,
                     CanDelete = p.UserId == userId,
+                    MediaFiles = p.MediaFiles.Select(m => new ActivityMediaViewModel
+                    {
+                        Id = m.Id,
+                        FilePath = m.FilePath,
+                        MediaType = m.MediaType,
+                        OrderIndex = m.OrderIndex
+                    }).ToList(),
                     Comments = p.Comments.Select(c => new ActivityCommentViewModel
                     {
                         Id = c.Id,
@@ -451,6 +490,7 @@ namespace JogMy.Features.Activity
                 .Include(p => p.Comments.OrderBy(c => c.CreatedAt))
                     .ThenInclude(c => c.User)
                 .Include(p => p.Likes)
+                .Include(p => p.MediaFiles.OrderBy(m => m.OrderIndex))
                 .Where(p => p.Privacy == PostPrivacy.Public)
                 .OrderByDescending(p => p.CreatedAt)
                 .Take(20)
@@ -478,6 +518,13 @@ namespace JogMy.Features.Activity
                     IsLikedByCurrentUser = p.Likes.Any(l => l.UserId == userId),
                     CanEdit = p.UserId == userId,
                     CanDelete = p.UserId == userId,
+                    MediaFiles = p.MediaFiles.Select(m => new ActivityMediaViewModel
+                    {
+                        Id = m.Id,
+                        FilePath = m.FilePath,
+                        MediaType = m.MediaType,
+                        OrderIndex = m.OrderIndex
+                    }).ToList(),
                     Comments = p.Comments.Select(c => new ActivityCommentViewModel
                     {
                         Id = c.Id,

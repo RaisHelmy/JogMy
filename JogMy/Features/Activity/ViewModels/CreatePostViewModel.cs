@@ -19,6 +19,9 @@ namespace JogMy.Features.Activity.ViewModels
         [Display(Name = "Upload Video")]
         public IFormFile? Video { get; set; }
 
+        [Display(Name = "Upload Photos/Videos")]
+        public List<IFormFile>? MediaFiles { get; set; } = new();
+
         // Activity details (optional)
         [Display(Name = "Distance (km)")]
         public double? Distance { get; set; }

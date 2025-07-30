@@ -111,14 +111,19 @@
                                     }
 
                                     <!-- Media -->
-                                    @if (!string.IsNullOrEmpty(post.ImagePath))
+                                    @if (post.MediaFiles.Any())
+                                    {
+                                        <div class="post-media mb-3">
+                                            @await Html.PartialAsync("_MediaGrid", post.MediaFiles)
+                                        </div>
+                                    }
+                                    else if (!string.IsNullOrEmpty(post.ImagePath))
                                     {
                                         <div class="post-media mb-3">
                                             <img src="@post.ImagePath" alt="Activity Photo" class="img-fluid rounded" style="max-height: 400px; width: 100%; object-fit: cover;" />
                                         </div>
                                     }
-
-                                    @if (!string.IsNullOrEmpty(post.VideoPath))
+                                    else if (!string.IsNullOrEmpty(post.VideoPath))
                                     {
                                         <div class="post-media mb-3">
                                             <video controls class="w-100 rounded" style="max-height: 400px;">

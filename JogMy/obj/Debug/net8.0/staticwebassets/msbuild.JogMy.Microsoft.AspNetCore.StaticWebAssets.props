@@ -992,6 +992,54 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\covers\f627df7f-86ec-4f4f-a60d-65703b0f1236_524875880_24590256563931514_131529319394546942_n.jpg))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\3fd24ddb-8fe7-4951-a9dd-25e33d67beb8_524875880_24590256563931514_131529319394546942_n.jpg))">
+      <SourceType>Package</SourceType>
+      <SourceId>JogMy</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/JogMy</BasePath>
+      <RelativePath>uploads/images/3fd24ddb-8fe7-4951-a9dd-25e33d67beb8_524875880_24590256563931514_131529319394546942_n.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\3fd24ddb-8fe7-4951-a9dd-25e33d67beb8_524875880_24590256563931514_131529319394546942_n.jpg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\5c6968c7-2e79-469f-82de-60cda98d052b_Screenshot_2025-06-30_at_4.51.32 PM.png))">
+      <SourceType>Package</SourceType>
+      <SourceId>JogMy</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/JogMy</BasePath>
+      <RelativePath>uploads/images/5c6968c7-2e79-469f-82de-60cda98d052b_Screenshot_2025-06-30_at_4.51.32 PM.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\5c6968c7-2e79-469f-82de-60cda98d052b_Screenshot_2025-06-30_at_4.51.32 PM.png))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\6e058cdb-ff1b-4673-ac6b-d0820ce2908f_Screenshot_2025-06-30_at_4.51.41 PM.png))">
+      <SourceType>Package</SourceType>
+      <SourceId>JogMy</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/JogMy</BasePath>
+      <RelativePath>uploads/images/6e058cdb-ff1b-4673-ac6b-d0820ce2908f_Screenshot_2025-06-30_at_4.51.41 PM.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\6e058cdb-ff1b-4673-ac6b-d0820ce2908f_Screenshot_2025-06-30_at_4.51.41 PM.png))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\7b6a4001-ef8d-4587-b69c-70f8b7cb0c9b_524875880_24590256563931514_131529319394546942_n.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>JogMy</SourceId>
@@ -1007,6 +1055,22 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\7b6a4001-ef8d-4587-b69c-70f8b7cb0c9b_524875880_24590256563931514_131529319394546942_n.jpg))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\d87d3f2f-fad7-4153-9817-41722ab33dc6_Screenshot_2025-06-30_at_4.51.22 PM.png))">
+      <SourceType>Package</SourceType>
+      <SourceId>JogMy</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/JogMy</BasePath>
+      <RelativePath>uploads/images/d87d3f2f-fad7-4153-9817-41722ab33dc6_Screenshot_2025-06-30_at_4.51.22 PM.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\images\d87d3f2f-fad7-4153-9817-41722ab33dc6_Screenshot_2025-06-30_at_4.51.22 PM.png))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\profiles\8b6de4d9-184b-4d14-9536-2aac70bc233f_ChatGPT_Image_Jul_24,_2025,_11_27_01_AM.png))">
       <SourceType>Package</SourceType>

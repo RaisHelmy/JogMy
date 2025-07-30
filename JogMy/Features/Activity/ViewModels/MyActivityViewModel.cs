@@ -58,6 +58,7 @@ namespace JogMy.Features.Activity.ViewModels
         public string? ImagePath { get; set; }
         public string? VideoPath { get; set; }
         public PostPrivacy Privacy { get; set; }
+        public List<ActivityMediaViewModel> MediaFiles { get; set; } = new();
         public DateTime CreatedAt { get; set; }
         
         // Activity details
@@ -112,5 +113,13 @@ namespace JogMy.Features.Activity.ViewModels
                 return CreatedAt.ToString("MMM dd");
             }
         }
+    }
+
+    public class ActivityMediaViewModel
+    {
+        public int Id { get; set; }
+        public string FilePath { get; set; } = string.Empty;
+        public MediaType MediaType { get; set; }
+        public int OrderIndex { get; set; }
     }
 }

@@ -32,6 +32,7 @@ namespace JogMy.Models
         // Navigation properties
         public ICollection<ActivityComment> Comments { get; set; } = new List<ActivityComment>();
         public ICollection<ActivityLike> Likes { get; set; } = new List<ActivityLike>();
+        public ICollection<ActivityMedia> MediaFiles { get; set; } = new List<ActivityMedia>();
     }
 
     public enum PostPrivacy

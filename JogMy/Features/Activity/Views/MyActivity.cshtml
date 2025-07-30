@@ -1104,11 +1104,14 @@
                         </div>
                         
                         <div class="post-actions">
+                            <button type="button" class="post-action-btn" onclick="document.getElementById('multiMediaUpload').click()">
+                                <i class="bi bi-images text-primary me-2"></i>Multiple Photos/Videos
+                            </button>
                             <button type="button" class="post-action-btn" onclick="document.getElementById('imageUpload').click()">
-                                <i class="bi bi-image text-success me-2"></i>Photo
+                                <i class="bi bi-image text-success me-2"></i>Single Photo
                             </button>
                             <button type="button" class="post-action-btn" onclick="document.getElementById('videoUpload').click()">
-                                <i class="bi bi-camera-video text-danger me-2"></i>Video
+                                <i class="bi bi-camera-video text-danger me-2"></i>Single Video
                             </button>
                             <button type="button" class="post-action-btn" onclick="toggleActivityDetails()">
                                 <i class="bi bi-activity text-primary me-2"></i>Activity
@@ -1124,6 +1127,7 @@
                         </div>
                         
                         <!-- Hidden file inputs -->
+                        <input asp-for="CreatePost.MediaFiles" type="file" id="multiMediaUpload" accept="image/*,video/*" multiple style="display: none;" onchange="previewMultipleFiles(this)" />
                         <input asp-for="CreatePost.Image" type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="previewFile(this, 'image')" />
                         <input asp-for="CreatePost.Video" type="file" id="videoUpload" accept="video/*" style="display: none;" onchange="previewFile(this, 'video')" />
                     </form>
@@ -1228,13 +1232,19 @@
                         </div>
 
                         <!-- Post Media -->
-                        @if (!string.IsNullOrEmpty(post.ImagePath))
+                        @if (post.MediaFiles.Any())
+                        {
+                            <div class="post-media">
+                                @await Html.PartialAsync("_MediaGrid", post.MediaFiles)
+                            </div>
+                        }
+                        else if (!string.IsNullOrEmpty(post.ImagePath))
                         {
                             <div class="post-media">
                                 <img src="@post.ImagePath" alt="Post image" class="post-image" />
                             </div>
                         }
-                        @if (!string.IsNullOrEmpty(post.VideoPath))
+                        else if (!string.IsNullOrEmpty(post.VideoPath))
                         {
                             <div class="post-media">
                                 <video controls class="post-video">
@@ -1877,10 +1887,58 @@
             }
         }
 
+        function previewMultipleFiles(input) {
+            const preview = document.getElementById('filePreview');
+            if (input.files && input.files.length > 0) {
+                let previewHtml = '<div class="multi-file-preview">';
+                previewHtml += `<h6 class="mb-2"><i class="bi bi-images me-2"></i>${input.files.length} files selected</h6>`;
+                
+                for (let i = 0; i < Math.min(input.files.length, 5); i++) {
+                    const file = input.files[i];
+                    const isVideo = file.type.startsWith('video/');
+                    const icon = isVideo ? 'camera-video' : 'image';
+                    const color = isVideo ? 'text-danger' : 'text-success';
+                    
+                    previewHtml += `
+                        <div class="file-item mb-2 p-2 border rounded">
+                            <i class="bi bi-${icon} ${color} me-2"></i>
+                            <span class="file-name">${file.name}</span>
+                            <small class="text-muted ms-2">(${(file.size / 1024 / 1024).toFixed(2)} MB)</small>
+                        </div>
+                    `;
+                }
+                
+                if (input.files.length > 5) {
+                    previewHtml += `<small class="text-muted">...and ${input.files.length - 5} more files</small>`;
+                }
+                
+                previewHtml += `
+                    <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="clearMultipleFiles()">
+                        <i class="bi bi-x me-1"></i>Clear All
+                    </button>
+                </div>`;
+                
+                preview.innerHTML = previewHtml;
+                preview.style.display = 'block';
+                
+                // Clear single file inputs when multiple files are selected
+                document.getElementById('imageUpload').value = '';
+                document.getElementById('videoUpload').value = '';
+            }
+        }
+
+        function clearMultipleFiles() {
+            const input = document.getElementById('multiMediaUpload');
+            input.value = '';
+            document.getElementById('filePreview').style.display = 'none';
+        }
+
         function clearFile(type) {
             const input = document.getElementById(type + 'Upload');
             input.value = '';
             document.getElementById('filePreview').style.display = 'none';
+            // Also clear multiple media upload when single file is selected
+            document.getElementById('multiMediaUpload').value = '';
         }
 
         async function toggleLike(postId, button) {
