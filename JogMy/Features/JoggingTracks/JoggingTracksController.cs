@@ -32,5 +32,22 @@ namespace JogMy.Features.JoggingTracks
             }
             return View(track);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetWaypointTooltip(int trackId, int waypointIndex, double latitude, double longitude)
+        {
+            var track = await _context.JoggingTracks.FindAsync(trackId);
+            if (track == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.WaypointNumber = waypointIndex + 1;
+            ViewBag.TrackName = track.Name;
+            ViewBag.Latitude = latitude.ToString("F6");
+            ViewBag.Longitude = longitude.ToString("F6");
+
+            return PartialView("_WaypointTooltip");
+        }
     }
 }

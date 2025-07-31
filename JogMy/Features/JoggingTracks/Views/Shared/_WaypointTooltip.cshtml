@@ -1,0 +1,36 @@
+@{
+    var waypointNumber = ViewBag.WaypointNumber;
+    var trackName = ViewBag.TrackName;
+    var latitude = ViewBag.Latitude;
+    var longitude = ViewBag.Longitude;
+}
+
+<div class="waypoint-tooltip-simple">
+    <div class="waypoint-header-simple">
+        <div class="waypoint-number-simple">
+            <i class="bi bi-geo-alt-fill text-primary"></i>
+            <span class="waypoint-title-simple">Waypoint @waypointNumber</span>
+        </div>
+        <small class="text-muted">@trackName</small>
+    </div>
+    
+    <div class="waypoint-body-simple">
+        <div class="waypoint-coordinates-simple">
+            <small class="text-muted">
+                <i class="bi bi-crosshair me-1"></i>
+                @latitude, @longitude
+            </small>
+        </div>
+    </div>
+    
+    <div class="waypoint-footer-simple">
+        <div class="waypoint-actions-simple">
+            <button class="btn btn-success btn-sm me-2" onclick="openInGoogleMaps('@latitude', '@longitude')" title="Open in Google Maps">
+                <i class="bi bi-geo-alt me-1"></i>Google Maps
+            </button>
+            <button class="btn btn-info btn-sm" onclick="openInWaze('@latitude', '@longitude')" title="Open in Waze">
+                <i class="bi bi-navigation me-1"></i>Waze
+            </button>
+        </div>
+    </div>
+</div>

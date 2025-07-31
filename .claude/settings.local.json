@@ -12,7 +12,8 @@
       "Bash(dotnet run)",
       "Bash(dotnet run:*)",
       "Bash(sqlite3:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(pkill:*)"
     ],
     "deny": []
   }

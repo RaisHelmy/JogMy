@@ -94,6 +94,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = RmVhdHVyZXMvSm9nZ2luZ1RyYWNrcy9WaWV3cy9TaGFyZWQvX3Rvb2x0aXBKb2dnaW5nLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/raishelmy/Documents/JogMy/JogMy/Features/JoggingTracks/Views/Shared/_WaypointTooltip.cshtml]
+build_metadata.AdditionalFiles.TargetPath = RmVhdHVyZXMvSm9nZ2luZ1RyYWNrcy9WaWV3cy9TaGFyZWQvX1dheXBvaW50VG9vbHRpcC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/raishelmy/Documents/JogMy/JogMy/Features/JoggingTracks/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = RmVhdHVyZXMvSm9nZ2luZ1RyYWNrcy9WaWV3cy9fVmlld0ltcG9ydHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
